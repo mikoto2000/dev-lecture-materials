@@ -6,17 +6,17 @@
   },
   {
     "type": "custom-link",
-    "label": "準備: 安全な実験環境",
+    "label": "準備: Kuma と実験アプリ",
     "link": "/monitoring-intro/guide/00-prepare"
   },
   {
     "type": "custom-link",
-    "label": "1. URL を確かめる",
+    "label": "1. URL を登録する",
     "link": "/monitoring-intro/guide/01-url"
   },
   {
     "type": "custom-link",
-    "label": "2. 繰り返して確かめる",
+    "label": "2. 停止と復旧を見る",
     "link": "/monitoring-intro/guide/02-periodic"
   },
   {
@@ -49,6 +49,7 @@
     "label": "整理と後片付け",
     "link": "/monitoring-intro/guide/08-review"
   },
+  "appendix-custom-checker",
   "troubleshooting",
   "facilitator",
   "references",

@@ -1,69 +1,84 @@
-# 5. 大事な異常に気づける通知にする
+# 5. 通知を試し、ノイズを減らす
 
 ## 困りごと
 
-一度の失敗ですぐ通知したり、同じ障害で毎回通知したりすると、読むのがつらくなります。ただし通知を減らしすぎると、長く止まっていても気づけません。
+画面を見ていなければ Down に気づけません。一方、同じ障害で何度も通知すると、大事な知らせを見落としやすくなります。
 
-## 小さな追加: 連続回数と状態の変化
+## 小さな追加: ローカルだけの通知先
 
-ターミナル B で実行します。
+この章では Slack やメールの認証情報を使いません。Kuma の **Webhook** 通知を、同じ Compose 内の小さな通知受信器へ送ります。受信器はアプリと別のサービスなので、demo を止めても通知を受け取れます。
 
-```bash
-python3 monitor.py --path /items/1 --expect-name monitoring-demo --max-ms 500 --count 60 --interval 2 --failures 3 --recoveries 2
+```powershell
+docker compose --profile notifications up -d notification-sink
 ```
 
-- `CHECK`: 毎回残す観測結果
-- `ALERT`: 3 回連続で失敗したとき、一度だけ出す
-- `RECOVERY`: ALERT の後、2 回連続で成功したとき、一度だけ出す
+`demo-health` の Edit 画面から **Setup Notification** を開きます。
 
-1 回成功すると失敗の連続回数は戻ります。復旧を確認している途中に失敗すると、成功の連続回数も戻ります。まだ ALERT を出していない一時的な失敗の後には、RECOVERY を出しません。
+| 項目 | 設定 |
+|---|---|
+| Notification Type | Webhook |
+| Friendly Name | local-lab |
+| Post URL | `http://notification-sink:18081/` |
+| HTTP Method | POST |
+| Request Body | Preset - application/json |
 
-記録を残すことと、人に知らせる回数を分けています。このプログラムは起動するたびに通知状態がリセットされます。再起動をまたいだ重複抑制は実装していません。
+認証欄、追加ヘッダー、既定の通知先、既存の全監視への一括適用は設定しません。**Test** を押し、PowerShell で受信を確認します。
 
-## 安全な故障: 一時的な失敗と、続く失敗を比べる
-
-**戻すコマンドは `python3 labctl.py wrong-data off` です。** ターミナル C も同じ Ubuntu・同じフォルダーで開きます。
-
-まず、1回の失敗だけになるように操作します。
-
-```bash
-python3 labctl.py wrong-data on
+```powershell
+docker compose --profile notifications logs --tail 20 notification-sink
 ```
 
-ターミナル B に失敗の `CHECK` が1つ出た直後、ターミナル C で戻します。
+保存した通知先を `demo-health` に割り当て、監視も保存します。Test の成功は通知経路の確認です。監視に割り当てたことや、実際の Down / Up 通知まで成功することは、次の実験で確かめます。
 
-```bash
-python3 labctl.py wrong-data off
+受信器は教材用の記録先です。ここへ届いたことは、人がメッセージを読んだことの証明にはなりません。
+
+## 安全な故障: 本当の Down と Up を通知させる
+
+**復旧コマンドは `docker compose start demo` です。**
+
+```powershell
+docker compose stop demo
 ```
 
-成功の `CHECK` が続く一方、ALERT と RECOVERY は出ないことを確認します。操作が間に合わず 3 回失敗した場合は、条件を満たします。その場合の ALERT は正しい動作です。
+Down を確認してから受信器のログを見ます。続いて復旧させます。
 
-次に、故障を続けます。
-
-```bash
-python3 labctl.py wrong-data on
+```powershell
+docker compose start demo
+docker compose --profile notifications logs --tail 20 notification-sink
 ```
 
-3 回目の連続失敗で ALERT が出て、その後も失敗の CHECK は続く一方、ALERT は増えないことを確かめます。
+次の成功確認の後に Up の通知も受信することを確かめます。
+
+## 小さな追加: 連続する失敗だけを知らせる
+
+`demo-health` の Edit で次を設定します。
+
+- Retries: **2**
+- Heartbeat Retry Interval: **20 秒**
+- Resend Notification if Down X times consecutively: **0**（再通知なし）
+
+Retries が 2 の場合、最初の2回の失敗は **Pending** として扱われ、3回目の連続失敗で Down になります。「2回失敗で通知」ではありません。Pending 中は再試行間隔、Down 確定後は通常の確認間隔が使われます。
+
+もう一度 demo を止め、Pending → Down を観察します。失敗が続いても、再通知を 0 にした同じ監視から Down 通知が増え続けないことを確認します。別の監視や Test ボタンからの通知とは分けて数えます。
 
 ## 復旧
 
-```bash
-python3 labctl.py wrong-data off
+```powershell
+docker compose start demo
 ```
 
-成功が 2 回続いてから RECOVERY が一度出ることを確認します。監視が回数上限で終わりそうなら、故障を解除してから再実行し、最初から試し直します。
+次の成功確認で Up へ戻り、復旧通知が届くことを確認します。まだ Pending の間に成功へ戻った一時的な失敗は、Down 確定後の復旧と区別します。
+
+この教材では Kuma の標準動作を使います。自作スクリプト版にあった「連続2回の成功で復旧」という条件を、Kuma の HTTP 監視へ同じように設定できるとは説明しません。
 
 ## 確かめた範囲
 
-通知の重複を減らし、一瞬の揺れを見送れました。その分だけ、異常や復旧を伝えるまでの時間は長くなります。間隔 2 秒・連続 3 回なら、最初の失敗後さらに 2 回分を待ちます。実際の検知時間には、確認処理の所要時間と、故障が起きたタイミングも加わります。
-
-この実験ではターミナルに表示するだけです。人に届ける経路、担当者、夜間の扱い、通知の再送、長く未対応のときのエスカレーションは、まだありません。
+通知を遅らせて一時的な失敗を見送る分、異常を伝えるまでの時間は長くなります。再通知を 0 にすると、長く未対応でも追加の知らせは来ません。実運用では、担当者・通知先・再通知・対応手順を一緒に決めます。
 
 ## チェックポイント
 
-- 連続 1 回・3 回・10 回の条件は、何を得て何を失うか
-- 「1回でも起きたら困る失敗」を、連続 3 回の条件で見逃してよいか
-- 自分の監視で、通知を受けた人が最初にすることを一文にする
+- Test と、実際の Down / Up 通知を別々に確認する
+- Retries 2 のとき、3回目の連続失敗まで待つ理由を説明する
+- すぐ知らせる必要がある障害で、同じ設定を使ってよいか考える
 
 [4. 遅さを確かめる](./04-latency.md) / [6. 原因を絞る](./06-diagnose.md)

@@ -1,172 +1,158 @@
-# ローカル監視ラボ
+# Uptime Kuma と Compose のローカル監視ラボ
 
-Ubuntu の Bash と Python 3.10 以上を使います。Python 標準ライブラリだけで動き、
-追加パッケージ、Docker、認証情報、本番環境、外部ネットワークは不要です。
-次の 5 ファイルを同じディレクトリに保存してください。
+Windows の PowerShell と、起動済みの Docker Desktop（Linux コンテナ）を使います。
+ホストへの Python のインストールは不要です。Python は学習用コンテナの中だけで動きます。
+初回のイメージ取得にはインターネット接続が必要です。外部通知先や本番環境は使いません。
 
-- `common.py`：共有処理。ほかのプログラムの実行にも必要
-- `app.py`：監視対象のアプリ
-- `labctl.py`：初期化、故障の注入・解除、証拠の確認
-- `monitor.py`：回数を限定した監視
-- `watchdog.py`：監視結果の鮮度の確認
+ZIP をすべて展開し、PowerShell で `compose.yaml` のあるフォルダーへ移動してください。
+単一の Python ファイルだけをダウンロードしても、この手順は実行できません。
 
-`test_lab.py` は動作確認用の追加ファイルです。
+## 1. 起動する
 
-## 起動
-
-このディレクトリへ移動して実行します。
-
-```sh
-python3 labctl.py init
-python3 app.py
+```powershell
+docker compose version
+docker compose config
+docker compose up -d --build
+docker compose ps
 ```
 
-アプリはフォアグラウンドで動かしたままにします。別のターミナルで実行します。
+ブラウザーで http://127.0.0.1:13001 を開きます。Uptime Kuma は `2.5.5` に固定しています。
+初回はローカルの SQLite と管理者アカウントを設定します。この実験用に作ったパスワードを使い、
+実在する外部サービスのパスワードを流用しないでください。画面が開かない場合は数十秒待ち、
+`docker compose logs --tail 30 kuma` で起動状況を確認します。
 
-```sh
-python3 monitor.py --path /health
-python3 monitor.py --path /items/1 --expect-name monitoring-demo --max-ms 500
-python3 labctl.py inspect
+- ブラウザーからの Kuma：`http://127.0.0.1:13001`
+- ブラウザーからのアプリ：`http://127.0.0.1:18080/health`
+- Kuma に入力する監視 URL：`http://demo:18080/health` または `http://demo:18080/items/1`
+
+Kuma の画面に `localhost` や `127.0.0.1` を監視先として入力すると、Kuma 自身のコンテナを
+指します。Compose のサービス名 `demo` を使ってください。ホストに公開する 2 つのポートは
+ループバック限定です。外部公開、Docker ソケットの共有、特権コンテナは不要です。
+
+## 2. 監視して故障を入れる
+
+Kuma で HTTP(s) モニターを追加し、最初は `http://demo:18080/health` を設定します。
+次に `/items/1` 用の HTTP(s) モニターを追加します。名前、間隔、再試行、タイムアウト、
+本文の検証条件は、教材の各章の指定に合わせて変更します。
+
+```powershell
+docker compose stop demo
+docker compose start demo
+docker compose exec demo python labctl.py db-unavailable on
+docker compose exec demo python labctl.py db-unavailable off
+docker compose exec demo python labctl.py wrong-data on
+docker compose exec demo python labctl.py wrong-data off
+docker compose exec demo python labctl.py delay 0.8
+docker compose exec demo python labctl.py delay 2
+docker compose exec demo python labctl.py delay 0
+docker compose exec demo python labctl.py inspect
+docker compose logs --tail 20 demo
 ```
 
-接続先は `127.0.0.1:18080` 固定です。ポートが使用中なら、自分で起動したラボの
-アプリをそのターミナルで Ctrl+C により停止してください。不明なプロセスは停止しません。
-`/health` は意図的に静的な応答を返します。`/items/1` はリクエストごとに SQLite を
-読み取り専用で開き、実際に SELECT を実行して接続を閉じます。DB がない場合、
-アプリが空の DB を勝手に作ることはありません。
+一行ずつ実行し、故障中と解除後を観察します。すべてを一括実行すると変化を見逃します。
 
-SQLite は別プロセスの DB サーバーではありません。この実験で PostgreSQL のサービス停止やネットワーク障害を再現したとは言いません。
+- `stop demo`：アプリを停止します。Kuma は起動したままです。
+- `db-unavailable on`：専用 SQLite ファイルを一時退避します。`/health` は 200 のまま、
+  SQLite を毎回読み取り専用で開いて SELECT する `/items/1` は 503 になります。
+  存在しない DB を勝手に新規作成することはありません。
+- `wrong-data on`：SQLite の `name` が `wrong-demo` になります。HTTP 200 だけでは検出できません。
+  正常値は `{"id": 1, "name": "monitoring-demo"}` です。
+- `delay`：`/items/1` にだけ 0〜2 秒の待ち時間を入れます。グラフでの遅延観察と、
+  タイムアウトによる DOWN 判定は分けて考えます。
 
-## 故障と復旧
+SQLite はファイル型 DB です。この実験は、独立した DB サーバーの停止やネットワーク障害を
+そのまま再現するものではありません。
 
-各故障には解除コマンドがあります。`delay` は `/items/1` だけに作用します。
+## 3. ローカルで通知の到着を確かめる
 
-```sh
-python3 labctl.py db-unavailable on
-python3 labctl.py db-unavailable off
-python3 labctl.py wrong-data on
-python3 labctl.py wrong-data off
-python3 labctl.py delay 0.8
-python3 labctl.py delay 2
-python3 labctl.py delay 0
+通知の章に進んだら、独立した受信コンテナを追加します。
+
+```powershell
+docker compose --profile notifications up -d notification-sink
+docker compose logs --tail 20 notification-sink
 ```
 
-- 学習用 DB ファイルの一時退避：`/health` は 200 のまま、`/items/1` は 503 になります。
-- 不正なデータ：`/items/1` は 200 のままですが、`--expect-name monitoring-demo`
-  が失敗します。この内容検証は、整数の `id: 1` と期待する `name` の両方を要求します。
-- 0.8 秒の遅延：タイムアウトを 2 秒に設定すれば応答を受け取れますが、500 ms の
-  応答時間の条件は満たしません。
-- 2 秒の遅延：既定の 1 秒タイムアウトなら、`--max-ms` を指定しなくても失敗します。
+Kuma の通知設定で種類 `Webhook`、送信先 `http://notification-sink:18081/`、
+本文形式 `application/json` を設定します。カスタム本文や認証情報は不要です。
+通知名は `local-lab` などの学習用の名前にします。テスト送信を実行して保存し、
+対象モニターにその通知を割り当てて保存します。
 
-応答時間の条件とタイムアウトは、次のように分けて確認できます。
+`docker compose logs --tail 20 notification-sink` に `notification_received` と受信時刻が
+出たことを確認します。テスト送信の成功だけで、故障通知まで届いたとは判断しません。
+次に `docker compose stop demo` で DOWN、`docker compose start demo` で UP を発生させ、
+それぞれの通知を受信ログで確認します。受信コンテナはアプリ停止中も動き続けます。
 
-```sh
-python3 labctl.py delay 0.8
-python3 monitor.py --path /items/1 --max-ms 500 --timeout 2
-python3 labctl.py delay 2
-python3 monitor.py --path /items/1 --timeout 1
-python3 labctl.py delay 0
+受信先は Compose の内部ネットワークだけで使い、ホストにはポートを公開しません。
+受信本文は最大 8 KiB、本文読み取りは最大 3 秒で、ログは限られたフィールドだけです。
+名前・メッセージには学習用の文字列だけを使い、個人情報や秘密情報は送らないでください。
+この受信プログラムに監視機能や外部への送信機能はありません。
+
+## 4. 保存、再開、アプリだけの初期化
+
+Kuma の設定・履歴は `kumadata`、アプリの DB・故障設定・ログは `labstate` という
+名前付きボリュームに保存します。実際のリソース名にはプロジェクト名が付きます。
+初回に空の `labstate` だけを初期化し、以後の再起動では DB や故障設定を保持します。
+DB を退避した故障も、再起動だけで勝手に復旧しません。
+
+```powershell
+docker compose stop demo kuma
+docker compose start demo kuma
 ```
 
-連続した失敗と復旧を確認する例です。
+通知の受信コンテナも停止・再開したい場合は、同様に `notification-sink` を指定します。
 
-```sh
-python3 monitor.py --path /items/1 --expect-name monitoring-demo --max-ms 500 --timeout 2 --count 30 --interval 2 --failures 2 --recoveries 2
+コンテナを削除してもデータを残す場合は、次を使います。
+
+```powershell
+docker compose --profile notifications down
+docker compose up -d
 ```
 
-この有限回の監視が動いている間に、3 つ目のターミナルで故障を注入・解除します。
-毎回 `CHECK`、指定回数の連続失敗で一度だけ `ALERT`、その後の連続成功で
-一度だけ `RECOVERY` を表示します。失敗が続いてもアラートは重複しません。
-確認回数に達しない一時的な失敗の後には、復旧通知を出しません。
+通知実験を再開する場合は、受信コンテナも再度起動します。
 
-連続回数とアラート状態は、この実行のメモリ内だけで管理します。再起動すると
-初期状態に戻ります。メールなどへの通知配信は行いません。
-
-`--interval` は各チェックの**完了後**に待つ時間です。開始時刻を固定間隔にそろえる
-機能ではありません。終了コードは、全チェック成功なら 0、一度でも失敗したら
-その後復旧しても 1、設定・状態ファイルのエラーなら 2、Ctrl+C なら 130 です。
-故障実験中の終了コード 1 は想定どおりです。
-
-## 回数・サイズ・時間の上限
-
-- `--count`：1～120 回、既定は 1 回
-- `--interval`：0.1～60 秒、既定は 2 秒
-- `--failures` / `--recoveries`：各 1～120 回、既定は各 1 回
-- `--timeout`：0.1～5 秒、既定は 1 秒
-- `--max-ms`：任意指定の 1～10000 ms。タイムアウトとは別の応答品質の条件
-- `--path`：`/health` または `/items/1` のみ。ホスト・ポートは変更不可
-- 1 チェックにつき 1 リクエスト。再試行、リダイレクト、プロキシ、DNS は不使用
-- 本文は最大 4097 バイトまで読み、4096 バイトを超えたら失敗
-
-監視の親プロセスが `subprocess.run(timeout=...)` で検査用の子プロセス全体を制限します。
-読み取りごとのソケットタイムアウトだけに頼らないため、少量ずつ届く応答により
-いつまでも待ち続けることを防ぎます。期限を超えた子プロセスは停止して回収します。
-
-ただし、OS のプロセス生成・実行スケジューリング・停止には追加時間がかかることが
-あります。指定秒数ぴったりで必ず戻るリアルタイム処理ではありません。
-単調増加時計による `elapsed_ms` には、子プロセスの起動・待機と HTTP 処理が含まれます。
-アプリだけの処理時間とは異なるため、アプリログの `duration_ms` と比較してください。
-ログの突き合わせには UTC の時刻、所要時間の計測には単調増加時計を使います。
-
-## 監視自体の確認
-
-監視は、失敗も含めた**完了済みの各チェック**の後に `.state/last-check.json` を
-書き出し、ファイルを原子的に置き換えます。途中で中断された検査では更新しません。
-これは最後の観測結果であり、永続的なアラート状態や過去のメトリクスの保存ではありません。
-
-```sh
-python3 watchdog.py --max-age 5
+```powershell
+docker compose --profile notifications up -d notification-sink
 ```
 
-新しく正しい形式の結果があれば、監視が最近まで検査を完了できていたと分かります。
-`last_check_ok=false` でも、監視は動いています。アプリの正常性とは別の確認です。
-未作成、古い結果、形式不正、未来の時刻は終了コード 1、新しい有効な結果は 0 です。
-これは一度だけの確認です。監視を止めた後で再実行すると、結果が古くなる様子を確認できます。
-`--max-age` は、検査のタイムアウト + 検査後の待機時間 + 実行の余裕より長く設定します。
+アプリの状態だけを初期化するには、必ずアプリを停止してから実行します。
+Kuma の設定と監視履歴は消えません。モニターを動かしていれば、この停止も記録されます。
 
-両プログラムは `--state-file .state/another-check.json` にも対応しています。
-実行元ディレクトリにかかわらず、このラボの `.state` 直下の単純な JSON ファイル名だけを
-許可します。複数の監視には別々のファイルを使ってください。`delay.json` は予約済みです。
-任意名の観測ファイルは `reset` では削除しません。
-
-この watchdog は**同じホスト**で動き、時計・ディスク・電源・ネットワークの障害を
-監視対象と共有します。ホスト全体が停止したことを独立して確認することはできず、
-本番の外部監視の代わりにはなりません。時計の変更も鮮度判定に影響します。
-外部通知、監視再起動後の状態保持、永続的な障害履歴、認証、TLS、本番用の防御は対象外です。
-
-## 証拠の確認と後片付け
-
-`python3 labctl.py inspect` は、既知の DB 行、故障設定、最後の観測結果、
-直近最大 5 件のログを表示します。ログには UTC 時刻、パス、ステータス、所要時間、
-関連する DB エラー名が含まれます。ヘッダー、クエリ文字列、任意のパスは記録しません。
-クライアントがタイムアウトしてもアプリは停止しません。ログは実験中に増え、reset で消去します。
-
-1. アプリと実行中の監視を、それぞれのターミナルで Ctrl+C により停止します。
-2. `python3 labctl.py reset` を実行します。
-
-reset/init は専用 DB を作り直し、既知の故障、既定の観測結果、ログを初期化します。
-プロセスを停止する機能はありません。実行中にファイルを置き換えると競合するため、
-アプリや監視が動いている間は reset/init を使わないでください。
-
-無関係なファイルを残し、ディレクトリ全体・ワイルドカード・任意のパスを削除することは
-ありません。状態ファイルのシンボリックリンク、通常ファイル以外、ハードリンクは拒否します。
-これは信頼できるローカル環境での誤操作を防ぐための仕組みです。同時に別のプロセスが
-ファイルを差し替えるような攻撃に対するセキュリティ境界ではありません。
-
-## テスト
-
-ポート 18080 を使うアプリを停止してから実行します。
-
-```sh
-python3 test_lab.py
+```powershell
+docker compose stop demo
+docker compose run --rm demo python labctl.py reset
+docker compose up -d demo
 ```
 
-リポジトリのルートから実行する場合はこちらです。
+`reset` は専用 DB、既知の故障設定、アプリのログを作り直します。
+稼働中に `docker compose exec demo python labctl.py reset` を実行しないでください。
 
-```sh
-python3 docs/public/monitoring-intro/lab/test_lab.py
+### 明示的な全消去：やり直すと決めた場合だけ
+
+次のコマンドは、この Compose プロジェクトの名前付きボリュームも削除します。
+Kuma のアカウント、監視設定、履歴、アプリの状態がすべて失われ、元には戻せません。
+
+```powershell
+docker compose --profile notifications down --volumes
 ```
 
-テストはプログラムを自身の一時ディレクトリへコピーし、同じループバックの固定ポートを
-使います。自分で起動したプロセスだけを停止し、名前を明示したテスト専用ファイルだけを
-後片付けします。利用者がダウンロードして使っているラボの状態は初期化しません。
+## 安全に片付けるための注意
+
+- プロジェクト名は `monitoring-intro-lab` です。他の教材のコンテナやボリュームは操作しません。
+- 同じ PC で複数人・複数コピーを同時に使う場合は、たとえば `docker compose -p monitoring-pair2`
+  をすべての操作で一貫して使い、`compose.yaml` のホスト側ポート 13001 と 18080 も空いている
+  別番号へ変更します。コンテナ側のポートと Kuma の監視 URL は変更しません。
+- ポートが競合した場合は、何が使っているか確認します。知らないプロセスは停止しません。
+- Docker 全体を対象にした削除コマンドや、一括クリーンアップは使いません。
+- `requests.jsonl` はアプリの実験ログです。実験中に増えるため、不要になったら上の停止・reset
+  手順で片付けます。Compose の標準出力ログは各サービス最大 1 MiB × 3 ファイルです。
+- これは信頼できるローカル環境での学習用です。本番運用の堅牢化・バックアップ設計ではありません。
+
+## 任意の付録と開発者向けテスト
+
+自作の `monitor.py` と `watchdog.py` は [任意の付録](README-appendix.md) に残しています。
+本編の監視は Uptime Kuma が担当し、付録の Python 実行は本編の前提条件ではありません。
+
+教材の開発者は Python 3.10 以上で `python3 test_container.py` と `python3 test_lab.py` を実行できます。
+後者はポート 18080 が空いている必要があります。前者は一時ディレクトリと動的ポートを使います。
+利用者の実験データは初期化しません。コンテナ構成の静的検証と Docker 上の統合テストは
+リポジトリの `scripts/check-monitoring-compose.py` と `scripts/test-compose-monitoring.py` です。

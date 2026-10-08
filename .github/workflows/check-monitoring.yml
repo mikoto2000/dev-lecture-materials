@@ -37,3 +37,16 @@ jobs:
       - run: npm run check:monitoring
       - run: npm run test:monitoring
       - run: npm run build
+
+  compose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate actual Compose model
+        run: python3 scripts/check-monitoring-compose.py
+      - name: Build and test disposable Compose lab
+        run: python3 scripts/test-compose-monitoring.py

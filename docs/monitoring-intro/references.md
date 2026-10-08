@@ -1,33 +1,31 @@
 # 参考資料
 
-各章の実験を終え、必要になった項目から参照してください。
+本編は **Uptime Kuma 2.5.5** を対象にしています。2026-10-08 に公式の安定版と設定を確認しました。開発中の master ではなく、リリースの版を合わせて参照します。
 
-## 実験の準備
+## 導入とデータ保存
 
-- [Microsoft: WSL をインストールする](https://learn.microsoft.com/windows/wsl/install)
-- [Microsoft: WSL の基本コマンド](https://learn.microsoft.com/windows/wsl/basic-commands)
-- [Ubuntu: Python をインストールして使う](https://ubuntu.com/developers/docs/howto/python-setup/)
+- [Uptime Kuma 2.5.5 リリース](https://github.com/louislam/uptime-kuma/releases/tag/2.5.5)
+- [2.5.5 の README](https://github.com/louislam/uptime-kuma/blob/2.5.5/README.md)
+- [初期データベース選択画面](https://github.com/louislam/uptime-kuma/blob/2.5.5/src/pages/SetupDatabase.vue)
+- [Kuma v2 の移行・バックアップに関する説明](https://github.com/louislam/uptime-kuma/wiki/Migration-From-v1-To-v2)
+- [Docker Desktop の Windows 導入手順](https://docs.docker.com/desktop/setup/install/windows-install/)
+- [Docker Compose のネットワーク](https://docs.docker.com/compose/how-tos/networking/)
+- [Docker Compose down とボリューム削除](https://docs.docker.com/reference/cli/docker/compose/down/)
 
-## 小さな HTTP 確認と、時間の扱い
+## 設定と通知の意味を確認する
 
-- [Python 3.12: http.client](https://docs.python.org/3.12/library/http.client.html): HTTP 接続と、ブロッキング操作に対するタイムアウト
-- [Python 3.12: http.server](https://docs.python.org/3.12/library/http.server.html): 学習用 HTTP サーバー。公式にも本番用途は推奨されていません
-- [Python 3.12: time](https://docs.python.org/3.12/library/time.html): `monotonic()` による経過時間の測定
-- [Python 3.12: subprocess](https://docs.python.org/3.12/library/subprocess.html): 子プロセスを時間で制限する仕組み
+- [2.5.5 の監視設定画面](https://github.com/louislam/uptime-kuma/blob/2.5.5/src/pages/EditMonitor.vue): HTTP、Keyword、JSON Query、間隔、再試行、タイムアウト
+- [2.5.5 の監視実行処理](https://github.com/louislam/uptime-kuma/blob/2.5.5/server/model/monitor.js): Pending / Down / Up と通知の判定
+- [2.5.5 の Webhook 通知](https://github.com/louislam/uptime-kuma/blob/2.5.5/server/notification-providers/webhook.js)
+- [2.5.5 の日本語訳](https://github.com/louislam/uptime-kuma/blob/2.5.5/src/lang/ja.json): 英語の項目名との対応
 
-タイムアウト引数が、そのままリクエスト全体の絶対的な制限時間になるとは限りません。標準ライブラリーのソケット操作のタイムアウトと、スクリプト側が設ける処理全体の上限を区別します。
+## 実験アプリと次の学習
 
-## データと観測記録
+- [Python の http.server](https://docs.python.org/3.12/library/http.server.html): 学習用サーバー。本番利用は推奨されていません
+- [Python の sqlite3](https://docs.python.org/3.12/library/sqlite3.html): ファイル型 DB と読み取り専用接続
+- [Uptime Kuma の Prometheus 連携](https://github.com/louislam/uptime-kuma/wiki/Prometheus-Integration)
+- [Google SRE Book: Monitoring Distributed Systems](https://sre.google/sre-book/monitoring-distributed-systems/)
 
-- [Python 3.12: sqlite3](https://docs.python.org/3.12/library/sqlite3.html): SQLite の接続、読み取り専用 URI、トランザクションと接続の終了
-- [Python 3.12: os.replace](https://docs.python.org/3.12/library/os.html#os.replace): 同一ファイルシステム上で観測記録を置き換える処理
+分類や用語を一度に暗記するより、自分が検知できた故障と、見逃した故障に結び付けて読みます。
 
-SQLite の接続コンテキストマネージャーは、トランザクションを扱います。接続を閉じる処理とは区別します。実験用アプリはリクエストごとに接続を終了します。
-
-## 実験の後で読む監視設計
-
-- [Google SRE Book: Monitoring Distributed Systems](https://sre.google/sre-book/monitoring-distributed-systems/): 利用者に見える症状、内部の原因、通知、レイテンシーなどを整理する
-
-用語を一度に暗記するより、自分が検知できた故障・できなかった故障に結び付けて読みます。
-
-[教材トップへ戻る](./index.md)
+[教材トップ](./index.md)

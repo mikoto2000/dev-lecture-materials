@@ -1,0 +1,8 @@
+# Send only the five runtime source files and the build recipe to Docker.
+*
+!Dockerfile
+!common.py
+!app.py
+!labctl.py
+!container_start.py
+!notification_sink.py

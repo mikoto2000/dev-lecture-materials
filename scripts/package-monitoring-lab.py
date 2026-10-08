@@ -7,7 +7,9 @@ ROOT = Path(__file__).resolve().parents[1]
 LAB = ROOT / 'docs/public/monitoring-intro/lab'
 ARCHIVE = LAB.parent / 'monitoring-lab.zip'
 NAMES = ['.gitignore', 'README.md', 'app.py', 'common.py', 'labctl.py',
-         'monitor.py', 'watchdog.py', 'test_lab.py']
+         'monitor.py', 'watchdog.py', 'test_lab.py', 'compose.yaml', 'Dockerfile',
+         '.dockerignore', 'container_start.py', 'notification_sink.py',
+         'test_container.py', 'README-appendix.md']
 
 
 def archive_bytes():
@@ -26,7 +28,7 @@ expected = archive_bytes()
 if '--check' in sys.argv:
     if not ARCHIVE.exists() or ARCHIVE.read_bytes() != expected:
         raise SystemExit('Archive differs from lab sources: run npm run package:monitoring')
-    print('PASS: reproducible monitoring ZIP matches the eight source files')
+    print(f'PASS: reproducible monitoring ZIP matches the {len(NAMES)} source files')
 else:
     ARCHIVE.write_bytes(expected)
     print(f'Wrote {ARCHIVE.relative_to(ROOT)} ({len(expected)} bytes)')

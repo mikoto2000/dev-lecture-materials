@@ -1,0 +1,46 @@
+name: monitoring-intro-lab
+
+services:
+  kuma:
+    image: louislam/uptime-kuma:2.5.5
+    ports:
+      - "127.0.0.1:13001:3001"
+    volumes:
+      - kumadata:/app/data
+    logging:
+      driver: json-file
+      options:
+        max-size: "1m"
+        max-file: "3"
+
+  demo:
+    build: .
+    ports:
+      - "127.0.0.1:18080:18080"
+    volumes:
+      - labstate:/lab/.state
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    logging:
+      driver: json-file
+      options:
+        max-size: "1m"
+        max-file: "3"
+
+  notification-sink:
+    profiles: [notifications]
+    build: .
+    command: [python, notification_sink.py]
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    logging:
+      driver: json-file
+      options:
+        max-size: "1m"
+        max-file: "3"
+
+volumes:
+  kumadata:
+  labstate:
