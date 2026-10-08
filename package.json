@@ -13,7 +13,7 @@
     "check:wslc": "node scripts/check-wslc-docs.mjs",
     "package:monitoring": "python3 scripts/package-monitoring-lab.py",
     "check:monitoring": "node scripts/check-monitoring-docs.mjs",
-    "test:monitoring": "python3 docs/public/monitoring-intro/lab/test_lab.py && python3 docs/public/monitoring-intro/lab/test_container.py",
+    "test:monitoring": "python3 docs/public/monitoring-intro/lab/test_lab.py && python3 docs/public/monitoring-intro/lab/test_container.py && python3 scripts/test-resource-command-checks.py",
     "check:monitoring-compose": "python3 scripts/check-monitoring-compose.py",
     "test:monitoring-compose": "python3 scripts/test-compose-monitoring.py"
   },

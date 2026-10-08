@@ -8,7 +8,7 @@
 
 - [wslc を利用したコンテナ利用入門](docs/wslc-postgresql/index.md): PostgreSQL の起動・SQL・永続化を体験する60〜90分の教材
 
-- [インフラ監視実践入門](docs/monitoring-intro/index.md): URL の確認から、操作・応答時間・通知・監視自身へ段階的に広げる教材
+- [インフラ監視実践入門](docs/monitoring-intro/index.md): Uptime Kuma による動作確認から、通知・遅さ・ログ・容量・CPU/メモリー・通信へ段階的に広げる教材
 
 ## 構成と公開URL
 

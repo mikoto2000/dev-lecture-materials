@@ -26,13 +26,13 @@
   },
   {
     "type": "custom-link",
-    "label": "4. 遅さを確かめる",
-    "link": "/monitoring-intro/guide/04-latency"
+    "label": "4. 通知を整える",
+    "link": "/monitoring-intro/guide/05-alerts"
   },
   {
     "type": "custom-link",
-    "label": "5. 通知を整える",
-    "link": "/monitoring-intro/guide/05-alerts"
+    "label": "5. 遅さを確かめる",
+    "link": "/monitoring-intro/guide/04-latency"
   },
   {
     "type": "custom-link",
@@ -41,7 +41,22 @@
   },
   {
     "type": "custom-link",
-    "label": "7. 監視自身を確かめる",
+    "label": "7. 保存先の容量を読む",
+    "link": "/monitoring-intro/guide/09-disk"
+  },
+  {
+    "type": "custom-link",
+    "label": "8. CPU・メモリーを比べる",
+    "link": "/monitoring-intro/guide/10-cpu-memory"
+  },
+  {
+    "type": "custom-link",
+    "label": "9. 通信を分けて確かめる",
+    "link": "/monitoring-intro/guide/11-network"
+  },
+  {
+    "type": "custom-link",
+    "label": "10. 監視自身を確かめる",
     "link": "/monitoring-intro/guide/07-watchdog"
   },
   {
