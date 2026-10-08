@@ -123,7 +123,7 @@ Docker イメージの基本的な使い方は理解できたと思います。
 `httpd` イメージと同じように、 Apache HTTP Server を動作させるカスタム Docker イメージを作成します。
 まず、カレントディレクトリに `Dockerfile` という名前のファイルを作成し、次の内容を記述します。
 
-```Dockerfile
+```dockerfile
 # ベースイメージを指定
 # ベースイメージは、 Docker Hub で公開されている ubuntu イメージを使用
 FROM ubuntu:24.04
