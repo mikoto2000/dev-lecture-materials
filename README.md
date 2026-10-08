@@ -1,4 +1,4 @@
-# 勉強会テキスト
+# 開発系勉強会テキスト集
 
 開発環境づくりを学ぶハンズオン教材を、コンテンツごとに格納するリポジトリです。
 
@@ -15,7 +15,9 @@
 - `docs/<教材ディレクトリ>/`: 教材本文・画像・教材独自の `_meta.json`
 - 教材ごとにサイドバーを分けます。新しい教材は専用ディレクトリに追加してください
 - 既存の `docs/CONTENTS.md` と `docs/コンテナで構築する開発環境/` の各章・画像は同じパスで維持します
-- リポジトリ名 `devcontainer-handson`、公開base `/devcontainer-handson/`、GitHub Pages設定は変更しません
+- リポジトリ名は `dev-lecture-materials`、公開baseは `/dev-lecture-materials/` です
+- 公開教材: https://mikoto2000.github.io/dev-lecture-materials/
+- 改名により旧GitHub Pages URLの `/devcontainer-handson/` は自動転送されません。外部の教材リンクは新しいbaseへ更新してください。各章のbaseより後ろのパスは維持しています
 
 ## 編集・プレビュー
 

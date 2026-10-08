@@ -2,7 +2,7 @@
 pageType: home
 
 hero:
-  name: "勉強会テキスト"
+  name: "開発系勉強会テキスト集"
   text: "手を動かして、開発環境をつくる"
   tagline: "目的に合った教材を選び、自分のペースで進めましょう。"
   actions:
