@@ -26,6 +26,6 @@ features:
     details: Windows 上で PostgreSQL を起動し、SQL とデータの永続化を体験する60〜90分の教材です。
     link: /wslc-postgresql/
   - title: インフラ監視実践入門
-    details: Uptime Kuma に URL を1件登録するところから、操作・通知・遅さ・監視自身へ観測を足す実践教材です。
+    details: Uptime Kuma の動作確認から、通知・遅さ・ログ・容量・CPU/メモリー・通信へ観測を足す実践教材です。
     link: /monitoring-intro/
 ---

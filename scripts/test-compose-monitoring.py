@@ -8,6 +8,7 @@ smoke test; the course's Kuma UI/monitor behavior has a separate runtime review.
 from __future__ import annotations
 
 import http.client
+import ipaddress
 import json
 from pathlib import Path
 import socket
@@ -63,6 +64,60 @@ def expect_row(name):
     assert json.loads(body) == {"id": 1, "name": name}, body
 
 
+def observe_resources():
+    # Observe the named volume's backing filesystem without creating files or
+    # filling it. Capacity and inode counts belong to this Docker host, not to
+    # the demo database alone; no portable "healthy percentage" is asserted.
+    for option, columns in (("-h", ("Size", "Used", "Avail", "Use%")),
+                            ("-i", ("Inodes", "IUsed", "IFree", "IUse%"))):
+        output = compose("exec", "-T", "demo", "df", option, "/lab/.state", timeout=15)
+        lines = output.strip().splitlines()
+        assert len(lines) >= 2, output
+        assert all(column in lines[0].split() for column in columns), output
+        assert lines[-1].split()[-1] == "/lab/.state", output
+        print(f"OBSERVE: demo df {option} /lab/.state\n{output}", flush=True)
+
+    # Compose stats accepts one optional service, not a list of services.
+    # --no-stream takes one sample. Do not require a particular utilization,
+    # memory limit, or PIDS count: those vary by host, image, and sample time.
+    for service in ("demo", "kuma"):
+        output = compose("stats", "--no-stream", service, timeout=30)
+        lines = output.strip().splitlines()
+        assert len(lines) == 2, output
+        header = " ".join(lines[0].split())
+        for column in ("CPU %", "MEM USAGE / LIMIT", "MEM %", "NET I/O", "BLOCK I/O", "PIDS"):
+            assert column in header, output
+        fields = lines[1].split()
+        assert len(fields) >= 4, output
+        assert fields[1] == f"{PROJECT}-{service}-1", output
+        assert fields[2].endswith("%") and fields[-1].isdigit(), output
+        print(f"OBSERVE: {service} stats (one sample)\n{output}", flush=True)
+    print("PASS: bounded disk, inode, CPU, memory, and PIDS observations", flush=True)
+
+
+def ping_demo():
+    # Only the test-owned service is targeted. -c bounds count, -W bounds the
+    # no-response wait, and -w sets a deadline; subprocess adds an outer bound
+    # for Docker/DNS stalls. A reply validates ICMP, not HTTP or database data.
+    output = compose("exec", "-T", "kuma", "ping", "-c", "3", "-W", "1",
+                     "-w", "5", "demo", timeout=15)
+    assert "3 packets transmitted" in output and "3 received" in output, output
+    print(f"OBSERVE: Kuma -> demo ICMP\n{output}", flush=True)
+
+
+def observe_network():
+    output = compose("exec", "-T", "kuma", "getent", "hosts", "demo", timeout=15)
+    lines = output.strip().splitlines()
+    assert lines, output
+    for line in lines:
+        fields = line.split()
+        assert len(fields) >= 2, output
+        ipaddress.ip_address(fields[0])
+    print(f"OBSERVE: Kuma resolves demo\n{output}", flush=True)
+    ping_demo()
+    print("PASS: bounded service-name resolution and ICMP from Kuma", flush=True)
+
+
 def kuma_request(url, payload=None):
     # Kuma's Node runtime checks real service DNS/networking, including while
     # demo is stopped. No client package installation or outgoing URL is needed.
@@ -103,9 +158,14 @@ def main():
         expect_row("monitoring-demo")
         assert "200" in kuma_request("http://demo:18080/items/1")
         print("PASS: images start; Kuma UI and service-name networking respond", flush=True)
+        observe_resources()
+        observe_network()
 
         control("wrong-data", "on")
         expect_row("wrong-demo")
+        ping_demo()
+        expect_row("wrong-demo")
+        print("PASS: ICMP remains reachable while the application returns wrong data", flush=True)
         control("delay", "0.8")
         started = time.monotonic()
         expect_row("wrong-demo")

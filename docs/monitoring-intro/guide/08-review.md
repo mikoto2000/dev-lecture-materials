@@ -8,6 +8,9 @@
 | 本文・既知データを確認 | キーワード監視・操作監視の小さな例 | 必要な結果が返るか |
 | 応答時間のグラフを確認 | レイテンシーの観測 | 正常時より待たされていないか |
 | ログを調べる | 原因調査 | どこで何が起きたか |
+| 保存先の容量・inode を読む | 容量の観測 | 保存する余裕はあるか |
+| CPU・メモリーを時刻と比べる | 資源の観測 | 対象の使用量と遅さに関係があるか |
+| 名前解決・Ping を確かめる | 通信の観測 | この地点からどこまで届くか |
 | Kuma の停止を体験 | 監視自身の監視の設計 | 確認する側は動いているか |
 
 呼び方はツールや組織によって重なります。最初から分類を暗記するより、確かめたい問いと、まだ答えられない問いを分けましょう。
@@ -17,6 +20,15 @@
 Uptime Kuma で URL・内容・通知を扱いました。次に「多くの数値を継続して保存し、別の数値と同じ時間軸で比べたい」という要件が出たら、Prometheus による収集と Grafana による表示が候補になります。
 
 Kuma には Prometheus 向けのメトリクス出力があります。ただし、それを取り込んだだけでホストの CPU・メモリー・ディスク容量などを全部収集できるわけではありません。必要な対象には、適切な exporter や別の収集方法が必要です。[公式の連携手順](https://github.com/louislam/uptime-kuma/wiki/Prometheus-Integration)は、その段階で参照します。
+
+後半のコマンドで見た値を継続して保存したい場合は、次のように対象を分けます。
+
+- Linux ホストの CPU・メモリー・ファイルシステム: [node_exporter](https://prometheus.io/docs/guides/node-exporter/) などで、その Linux ホストを対象にする
+- コンテナー単位の使用量: [cAdvisor](https://github.com/google/cadvisor) など、コンテナーの実行環境に合う収集方法を選ぶ
+- Windows ホスト: [windows_exporter](https://github.com/prometheus-community/windows_exporter) など、Windows に対応した収集方法を別に用意する
+- アプリログ: メトリクスの収集とは別に、時刻・対象・検索方法をそろえる
+
+どのホスト・コンテナー・保存先の値かをラベルで区別し、表示だけでなく担当者へ届く警告ルールも設計します。同じホストへ全部置くと、ホスト停止でまとめて観測できなくなる限界は残ります。
 
 今回は Prometheus / Grafana の導入を前提にしません。必要な監視対象や通知条件を説明できるようになってから、機能と運用の負担を比較します。
 
@@ -66,4 +78,4 @@ docker compose --profile notifications down --volumes
 
 Kuma v2 のバックアップを残す場合は、Kuma を停止してデータディレクトリー全体をバックアップする[公式の説明](https://github.com/louislam/uptime-kuma/wiki/Migration-From-v1-To-v2)を参照します。旧版の JSON エクスポート画面がある前提にはしません。
 
-[7. 監視自身を確かめる](./07-watchdog.md) / [教材トップ](../index.md)
+[10. 監視自身を確かめる](./07-watchdog.md) / [教材トップ](../index.md)

@@ -14,7 +14,7 @@ function walk(directory) {
   }
 }
 walk(root);
-assert.equal(pages.length, 15, 'Expected introduction, nine chapters, appendix and four support pages');
+assert.equal(pages.length, 18, 'Expected original course, three resource chapters and appendix');
 for (const file of pages) {
   const text = readFileSync(file, 'utf8');
   assert.equal((text.match(/^```/gm) || []).length % 2, 0, `${file}: unclosed fence`);
@@ -28,6 +28,18 @@ for (const file of pages) {
   }
 }
 const metadata = JSON.parse(readFileSync(path.join(root, '_meta.json'), 'utf8'));
+const expectedOrder = ['00-prepare', '01-url', '02-periodic', '03-operation',
+  '05-alerts', '04-latency', '06-diagnose', '09-disk', '10-cpu-memory',
+  '11-network', '07-watchdog', '08-review'];
+const guideItems = metadata.filter(item => typeof item === 'object' && item.type === 'custom-link');
+assert.deepEqual(guideItems.map(item => path.basename(item.link)), expectedOrder,
+  'Learning order must move from service behavior to alerts, latency, logs and scoped resource observations');
+for (const [position, name] of expectedOrder.entries()) {
+  const text = readFileSync(path.join(root, 'guide', `${name}.md`), 'utf8');
+  const footer = text.trim().split('\n').at(-1);
+  if (position > 0) assert.ok(footer.includes(`./${expectedOrder[position - 1]}.md`), `${name}: missing previous chapter`);
+  if (position + 1 < expectedOrder.length) assert.ok(footer.includes(`./${expectedOrder[position + 1]}.md`), `${name}: missing next chapter`);
+}
 for (const item of metadata) {
   const target = typeof item === 'string' ? path.join(root, `${item}.md`)
     : item.type === 'custom-link' ? path.join(docs, `${item.link}.md`)
