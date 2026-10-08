@@ -96,7 +96,10 @@ def main():
     try:
         compose("up", "-d", "--build", timeout=600)
         wait_http(18080, "/health")
-        wait_http(13001, "/")
+        # A new Kuma v2 volume redirects / to the database-selection screen.
+        # Do not treat that expected redirect as a failed startup.
+        wait_http(13001, "/setup-database")
+        assert request("/", 13001)[0] == 302
         expect_row("monitoring-demo")
         assert "200" in kuma_request("http://demo:18080/items/1")
         print("PASS: images start; Kuma UI and service-name networking respond", flush=True)
@@ -136,7 +139,7 @@ def main():
         compose("down", timeout=90)
         compose("up", "-d", timeout=120)
         wait_http(18080, "/health")
-        wait_http(13001, "/")
+        wait_http(13001, "/setup-database")
         expect_row("wrong-demo")
         assert '"delay_seconds": 0.8' in control("inspect")
         compose("exec", "-T", "kuma", "node", "-e",
