@@ -1,96 +1,79 @@
-# 準備: 安全に壊して戻せる場所をつくる
+# 準備: Uptime Kuma と実験アプリを用意する
 
-## 使う環境をそろえる
+## 実行場所をそろえる
 
-この教材の実行場所は **WSL 2 の Ubuntu 内の Bash** です。Ubuntu 24.04 LTS と Python 3.12 を想定し、スクリプトは Python 3.10 以降を対象にしています。Linux の Ubuntu でも同じコマンドを使えます。
-
-Windows の PowerShell と Ubuntu の Bash は別のシェルです。以下の最初の枠だけ PowerShell で実行し、以後は Bash に統一します。PowerShell の `curl` や Windows 側の Python は使いません。
-
-**Windows の PowerShell:**
+本編は **Windows の PowerShell** で実行します。Docker Desktop が起動し、Linux コンテナーを使えることが前提です。WSL 2 バックエンドの準備や Docker Desktop の導入は、[公式の Windows 手順](https://docs.docker.com/desktop/setup/install/windows-install/)に沿って勉強会の前に済ませます。組織の利用条件も確認してください。
 
 ```powershell
-wsl --list --verbose
-wsl -d Ubuntu-24.04
+docker version
+docker compose version
 ```
 
-`Ubuntu-24.04` は、自分のディストリビューション名へ読み替えます。名前は `wsl --list --verbose` の結果で確認できます。VERSION 列が `2` であることも確認します。Ubuntu がない場合は、[Microsoft の WSL インストール手順](https://learn.microsoft.com/windows/wsl/install)で準備してから戻ってください。インストール・更新には管理者権限や再起動が必要になる場合があるので、勉強会の前に済ませます。
+Docker の Client と Server の両方が表示されること、Compose V2 が使えることを確認します。`docker` コマンドはあっても Server に接続できなければ、まだ実験を始められません。
 
-**ここから先は Ubuntu の Bash:**
+本編では Ubuntu の Bash へ移りません。以前の自作 Python 監視を試したい方は、環境を分けた[補足](../appendix-custom-checker.md)を参照してください。
 
-```bash
-python3 --version
-python3 -c 'import http.server, http.client, sqlite3; print(sqlite3.sqlite_version)'
+## 配布ファイルを置く
+
+[教材トップ](../index.md)から ZIP をダウンロードし、エクスプローラーで展開します。`compose.yaml` と `Dockerfile` がある `monitoring-lab` フォルダーを PowerShell で開きます。例としてダウンロードフォルダーへ展開した場合は、次のようになります。実際の展開先に読み替えてください。
+
+```powershell
+Set-Location "$HOME\Downloads\monitoring-lab"
+Get-ChildItem
 ```
 
-Python がない場合だけ、Ubuntu の公式パッケージから導入します。これは実験前の環境準備です。
+Kuma は `louislam/uptime-kuma:2.5.5` に固定しています。`latest` や開発版へ置き換えず、まず同じ版で進めましょう。アプリは同梱の Dockerfile からビルドします。
 
-```bash
-sudo apt update
-sudo apt install python3
+## 壊す前に、戻し方を知る
+
+停止させたアプリは、次のコマンドで戻せます。
+
+```powershell
+docker compose start demo
 ```
 
-以後の実験に `sudo` は不要です。
+データと待ち時間の故障は、アプリが起動中なら個別に戻せます。
 
-## ファイルを置く
-
-[教材トップ](../index.md)から ZIP を Windows にダウンロードし、エクスプローラーで展開します。Ubuntu 側に専用フォルダーを作り、展開された `monitoring-lab` フォルダー内のファイルをコピーします。
-
-```bash
-mkdir -p ~/monitoring-workshop
-cd ~/monitoring-workshop
-explorer.exe .
+```powershell
+docker compose exec demo python labctl.py db-unavailable off
+docker compose exec demo python labctl.py wrong-data off
+docker compose exec demo python labctl.py delay 0
 ```
 
-この枠は Ubuntu の Bash で実行します。表示されたエクスプローラーが、Ubuntu のホームにある `monitoring-workshop` フォルダーです。その中へコピーしてください。Windows のダウンロード先で直接動かすのではなく、Ubuntu のホーム配下に置きます。
+実験アプリの状態を初期化するときは、アプリだけを止めてから専用データを作り直します。**アプリの学習用 DB とログが初期化されます。Kuma の監視設定は残ります。**
 
-```bash
-cd ~/monitoring-workshop
-ls
+```powershell
+docker compose stop demo
+docker compose run --rm demo python labctl.py reset
+docker compose up -d demo
 ```
 
-`app.py`、`labctl.py`、`monitor.py`、`watchdog.py`、補助ファイル、`README.md` が見えることを確かめます。`monitoring-lab` が1つだけ見える場合は、その中のファイルをコピーするか、そのフォルダーへ移動してください。
+初期化前に残したい記録を保存します。共有コンテナーを止めたり、`docker system prune` でまとめて削除したりする必要はありません。
 
-Git を利用する方は、リポジトリの `docs/public/monitoring-intro/lab/` 内でも実行できます。受講するだけなら Node.js や npm は不要です。
+## 起動する
 
-## 壊す前に、戻し方を覚える
-
-アプリと監視は、それぞれを起動したターミナルで **Ctrl+C** を押すと停止します。ほかの Python プロセスまで止める `killall` や `pkill` は使いません。
-
-実験中の故障を解除するコマンドは次のとおりです。対応する故障を入れたら、同じ行を使って戻します。
-
-```bash
-python3 labctl.py db-unavailable off
-python3 labctl.py wrong-data off
-python3 labctl.py delay 0
+```powershell
+docker compose up -d --build
+docker compose ps
 ```
 
-最初からやり直すときは、先にアプリ・監視を Ctrl+C で止め、次を実行します。**学習用 DB と観測記録が初期状態になる**ので、残したい記録は先に別名で保存します。
+初回はイメージの取得に時間がかかります。Kuma の起動・データベース準備を待ち、ブラウザーで次を開きます。
 
-```bash
-python3 labctl.py reset
-```
+- Uptime Kuma: [http://127.0.0.1:13001](http://127.0.0.1:13001)
+- 実験アプリ: [http://127.0.0.1:18080/health](http://127.0.0.1:18080/health)
 
-スクリプトのある場所の `.state/` に学習用ファイルを置きます。本番 DB、共有フォルダー、既存システムの設定には向けないでください。実験用 HTTP は `127.0.0.1:18080` のみで待ち受けます。ポートの公開やファイアウォールの変更は不要です。
+Kuma の初期画面では、データベースとして **SQLite** を選びます。その後、実験用の管理者アカウントを自分で作成してください。パスワードを教材、チャット、スクリーンショットへ書き込まないでください。
 
-## 二つのターミナルを使う
+本教材の画面項目は英語表記を基準に説明します。必要なら画面の言語を English にそろえます。日本語表示でも機能は同じです。
 
-- ターミナル A: アプリを起動し、ログを見る
-- ターミナル B: 確認コマンドを実行し、故障を設定・復旧する
+起動に失敗した場合は、`docker compose logs --tail 30 kuma` で状態を確認し、[困ったとき](../troubleshooting.md)へ進みます。
 
-どちらも同じ Ubuntu を開き、同じ `~/monitoring-workshop` へ移動します。第 2 章以降、監視を繰り返す間に故障を切り替えるため、ターミナル C も使います。
+## 二つの localhost を区別する
 
-ターミナル B で初期化します。
+ブラウザーは Windows からアクセスするので、`127.0.0.1:13001` を使います。一方、Kuma はコンテナー内で動いています。Kuma にとっての `localhost` は Kuma 自身です。
 
-```bash
-python3 labctl.py init
-```
+Kuma に登録する監視先は **`http://demo:18080/health`** です。Compose の同じネットワークにあるサービス名 `demo` を使います。画面を開く URL と、監視先の URL は役割が違います。
 
-ターミナル A でアプリを起動します。
+Kuma の設定・履歴とアプリのデータは、別々の専用名前付きボリュームに保存します。単なる stop/start や down では消えません。故障設定も再起動だけでは解除されないので、解除コマンドを使います。
 
-```bash
-python3 app.py
-```
-
-この画面が入力待ちに戻らないのは正常です。プロセスが動いています。ポート使用中のエラーが出た場合は、[困ったとき](../troubleshooting.md)へ進み、無関係なプロセスを止めないでください。
-
-[教材トップ](../index.md) / [1. URL を確かめる](./01-url.md)
+[教材トップ](../index.md) / [1. URL を登録する](./01-url.md)

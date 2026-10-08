@@ -38,6 +38,8 @@ npx tsc --noEmit
 npm run check:wslc
 npm run check:monitoring
 npm run test:monitoring
+npm run check:monitoring-compose
+npm run test:monitoring-compose
 npm run build
 npm run preview
 ```
@@ -54,6 +56,8 @@ Windows / WSL / wslc と PostgreSQL 実サービスの操作試験は未実施�
 
 ## インフラ監視教材の実験用ファイル
 
-`docs/public/monitoring-intro/lab/` に Python 標準ライブラリーだけで動くローカル実験を格納します。受講者向けには教材トップから ZIP を配布し、Node.js は不要です。Python ファイルを変更したら `npm run package:monitoring` で配布 ZIP を再生成します。
+`docs/public/monitoring-intro/lab/` に Uptime Kuma 2.5.5 と学習用アプリの Compose 環境を格納します。本編は Windows PowerShell / Docker Desktop を使用し、監視は Kuma の GUI で設定します。受講者向けには教材トップから ZIP を配布します。ラボを変更したら `npm run package:monitoring` で ZIP を再生成します。
 
-`npm run test:monitoring` は Python 3.10 以降が必要です。自動試験と Windows / WSL での実機確認の範囲は、[検証記録](docs/monitoring-intro/verification.md)を参照してください。
+自作の `monitor.py` / `watchdog.py` は任意の補足です。本編の監視には使用しません。
+
+`npm run test:monitoring` は Python 3.10 以降が必要です。`check:monitoring-compose` は Docker CLI / Compose V2、`test:monitoring-compose` は Docker の実行環境も必要です。後者は試験専用のプロジェクトとボリュームを作成し、終了時に削除します。自動試験と Windows / WSL での実機確認の範囲は、[検証記録](docs/monitoring-intro/verification.md)を参照してください。

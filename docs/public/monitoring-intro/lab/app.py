@@ -2,6 +2,7 @@
 """Disposable local HTTP service: static health versus a real SQLite read."""
 from __future__ import annotations
 
+import argparse
 import json
 import math
 import sqlite3
@@ -96,12 +97,16 @@ class Server(ThreadingHTTPServer):
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--host", choices=(HOST, "0.0.0.0"), default=HOST,
+                        help="keep loopback by default; 0.0.0.0 is for the lab container")
+    args = parser.parse_args()
     try:
         database_path()
         state_path(LOG_NAME)
         state_path(DELAY_NAME)
-        with Server((HOST, PORT), Handler) as server:
-            print(f"Lab app: http://{HOST}:{PORT} (Ctrl+C to stop)", flush=True)
+        with Server((args.host, PORT), Handler) as server:
+            print(f"Lab app: http://{args.host}:{PORT} (Ctrl+C to stop)", flush=True)
             try:
                 server.serve_forever(poll_interval=0.1)
             except KeyboardInterrupt:
