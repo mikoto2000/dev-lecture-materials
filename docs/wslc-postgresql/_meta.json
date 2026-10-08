@@ -1,0 +1,41 @@
+[
+  {
+    "type": "file",
+    "name": "index",
+    "label": "はじめに"
+  },
+  {
+    "type": "custom-link",
+    "label": "1. 事前準備",
+    "link": "/wslc-postgresql/guide/01-prepare"
+  },
+  {
+    "type": "custom-link",
+    "label": "2. PostgreSQL を起動する",
+    "link": "/wslc-postgresql/guide/02-start"
+  },
+  {
+    "type": "custom-link",
+    "label": "3. SQL を実行する",
+    "link": "/wslc-postgresql/guide/03-sql"
+  },
+  {
+    "type": "custom-link",
+    "label": "4. 止める・再開する・作り直す",
+    "link": "/wslc-postgresql/guide/04-persist"
+  },
+  {
+    "type": "custom-link",
+    "label": "5. 自分のアプリから接続する",
+    "link": "/wslc-postgresql/guide/05-connect"
+  },
+  {
+    "type": "custom-link",
+    "label": "6. 後片付け",
+    "link": "/wslc-postgresql/guide/06-cleanup"
+  },
+  "troubleshooting",
+  "facilitator",
+  "references",
+  "verification"
+]

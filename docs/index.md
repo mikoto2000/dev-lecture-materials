@@ -10,8 +10,15 @@ hero:
       text: Dev Container で構築する開発環境
       link: /コンテナで構築する開発環境/
 
+    - theme: alt
+      text: wslc を利用したコンテナ利用入門
+      link: /wslc-postgresql/
+
 features:
   - title: Dev Container で構築する開発環境
     details: Docker・Docker Compose の基礎から、Dev Container による開発環境づくりまで学ぶ教材です。
     link: /コンテナで構築する開発環境/
+  - title: wslc を利用したコンテナ利用入門
+    details: Windows 上で PostgreSQL を起動し、SQL とデータの永続化を体験する60〜90分の教材です。
+    link: /wslc-postgresql/
 ---

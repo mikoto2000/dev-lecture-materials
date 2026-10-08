@@ -9,7 +9,8 @@
     "format": "prettier --write .",
     "lint": "eslint .",
     "textlint": "textlint ./docs",
-    "preview": "rspress preview"
+    "preview": "rspress preview",
+    "check:wslc": "node scripts/check-wslc-docs.mjs"
   },
   "dependencies": {
     "@rspress/core": "2.0.23"

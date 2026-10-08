@@ -6,6 +6,8 @@
 
 - [Dev Container で構築する開発環境](docs/コンテナで構築する開発環境/index.md): Docker・Docker Compose の基礎から Dev Container まで
 
+- [wslc を利用したコンテナ利用入門](docs/wslc-postgresql/index.md): PostgreSQL の起動・SQL・永続化を体験する60〜90分の教材
+
 ## 構成と公開URL
 
 - `docs/index.md`: 教材を選ぶ共通トップページ
@@ -29,6 +31,7 @@ npm run dev
 ```bash
 npm run lint
 npx tsc --noEmit
+npm run check:wslc
 npm run build
 npm run preview
 ```
@@ -36,3 +39,9 @@ npm run preview
 ビルド時にリンク切れを検査します。教材追加時には共通トップからの導線、教材固有の目次、前後の章へのリンク、既存公開URLも確認してください。
 
 `npm run textlint` は既存教材に未解消の指摘があります。無関係な文体の修正は教材の再構成と分けて扱います。
+
+## wslc 教材の配布資料と実機確認
+
+SQL と PowerShell の例は `docs/public/wslc-postgresql/examples/` に格納し、教材トップからダウンロードできます。教材を読む受講者に Node.js は不要です。
+
+Windows / WSL / wslc と PostgreSQL 実サービスの操作試験は未実施です。[講師用ガイド](docs/wslc-postgresql/facilitator.md)と[検証記録](docs/wslc-postgresql/verification.md)を確認し、開催前に実機で確認してください。

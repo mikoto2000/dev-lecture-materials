@@ -1,0 +1,32 @@
+# 読むためのコマンド集です。全体を一括実行しないでください。
+# Windows PowerShell。各章の注意事項・期待結果を確認して1つずつ実行します。
+
+# 1. 事前準備
+wsl --version
+wslc version
+wslc run --help
+wslc volume --help
+wslc image pull postgres:17
+wslc image list
+wslc container list --all
+wslc volume list
+
+# 2. 新規作成。同名の既存リソースがないことを確認してから実行。
+wslc volume create wslc-workshop-pgdata
+wslc volume inspect wslc-workshop-pgdata
+wslc run -d --name wslc-workshop-db -e POSTGRES_PASSWORD=workshop-local-only -e POSTGRES_DB=workshop -e POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256 -p 127.0.0.1:15432:5432 -v wslc-workshop-pgdata:/var/lib/postgresql/data postgres:17
+wslc container logs wslc-workshop-db
+wslc exec wslc-workshop-db pg_isready -h 127.0.0.1 -U postgres -d workshop
+
+# 3. accepting connections を確認後に接続。パスワードは workshop-local-only
+wslc exec -it wslc-workshop-db psql -h 127.0.0.1 -U postgres -d workshop -W
+# ここからは psql 画面。01-tasks.sql の内容を実行し、\q で PowerShell に戻る。
+
+# 4. 停止・再開
+wslc container stop wslc-workshop-db
+wslc container start wslc-workshop-db
+wslc exec wslc-workshop-db pg_isready -h 127.0.0.1 -U postgres -d workshop
+# ready 後に接続してデータを確認。再作成・削除の手順は本文を参照。
+
+# 5. Windows 側の TCP ポート確認（SQLや認証の確認ではない）
+Test-NetConnection -ComputerName 127.0.0.1 -Port 15432
