@@ -12,5 +12,10 @@
     "text": "wslc / PostgreSQL",
     "link": "/wslc-postgresql/",
     "activeMatch": "^/wslc-postgresql/"
+  },
+  {
+    "text": "インフラ監視",
+    "link": "/monitoring-intro/",
+    "activeMatch": "^/monitoring-intro/"
   }
 ]

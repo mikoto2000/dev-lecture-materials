@@ -1,0 +1,39 @@
+name: Check monitoring course
+
+on:
+  pull_request:
+    paths:
+      - 'docs/monitoring-intro/**'
+      - 'docs/public/monitoring-intro/**'
+      - 'docs/index.md'
+      - 'docs/_nav.json'
+      - 'scripts/*monitoring*'
+      - 'package*.json'
+      - 'rspress.config.ts'
+      - '.github/workflows/check-monitoring.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: npm ci
+      - run: npm run lint
+      - run: npx tsc --noEmit
+      - run: npx textlint docs/monitoring-intro
+      - run: npm run check:wslc
+      - run: npm run check:monitoring
+      - run: npm run test:monitoring
+      - run: npm run build

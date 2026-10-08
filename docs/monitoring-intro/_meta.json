@@ -1,0 +1,56 @@
+[
+  {
+    "type": "file",
+    "name": "index",
+    "label": "はじめに"
+  },
+  {
+    "type": "custom-link",
+    "label": "準備: 安全な実験環境",
+    "link": "/monitoring-intro/guide/00-prepare"
+  },
+  {
+    "type": "custom-link",
+    "label": "1. URL を確かめる",
+    "link": "/monitoring-intro/guide/01-url"
+  },
+  {
+    "type": "custom-link",
+    "label": "2. 繰り返して確かめる",
+    "link": "/monitoring-intro/guide/02-periodic"
+  },
+  {
+    "type": "custom-link",
+    "label": "3. 必要な操作を確かめる",
+    "link": "/monitoring-intro/guide/03-operation"
+  },
+  {
+    "type": "custom-link",
+    "label": "4. 遅さを確かめる",
+    "link": "/monitoring-intro/guide/04-latency"
+  },
+  {
+    "type": "custom-link",
+    "label": "5. 通知を整える",
+    "link": "/monitoring-intro/guide/05-alerts"
+  },
+  {
+    "type": "custom-link",
+    "label": "6. 原因を絞る",
+    "link": "/monitoring-intro/guide/06-diagnose"
+  },
+  {
+    "type": "custom-link",
+    "label": "7. 監視自身を確かめる",
+    "link": "/monitoring-intro/guide/07-watchdog"
+  },
+  {
+    "type": "custom-link",
+    "label": "整理と後片付け",
+    "link": "/monitoring-intro/guide/08-review"
+  },
+  "troubleshooting",
+  "facilitator",
+  "references",
+  "verification"
+]
