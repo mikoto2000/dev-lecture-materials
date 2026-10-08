@@ -7,5 +7,10 @@
     "text": "Dev Container",
     "link": "/コンテナで構築する開発環境/",
     "activeMatch": "^/コンテナで構築する開発環境/"
+  },
+  {
+    "text": "wslc / PostgreSQL",
+    "link": "/wslc-postgresql/",
+    "activeMatch": "^/wslc-postgresql/"
   }
 ]
