@@ -8,6 +8,8 @@
 
 - [wslc を利用したコンテナ利用入門](docs/wslc-postgresql/index.md): PostgreSQL の起動・SQL・永続化を体験する60〜90分の教材
 
+- [インフラ監視実践入門](docs/monitoring-intro/index.md): URL の確認から、操作・応答時間・通知・監視自身へ段階的に広げる教材
+
 ## 構成と公開URL
 
 - `docs/index.md`: 教材を選ぶ共通トップページ
@@ -34,6 +36,8 @@ npm run dev
 npm run lint
 npx tsc --noEmit
 npm run check:wslc
+npm run check:monitoring
+npm run test:monitoring
 npm run build
 npm run preview
 ```
@@ -47,3 +51,9 @@ npm run preview
 SQL と PowerShell の例は `docs/public/wslc-postgresql/examples/` に格納し、教材トップからダウンロードできます。教材を読む受講者に Node.js は不要です。
 
 Windows / WSL / wslc と PostgreSQL 実サービスの操作試験は未実施です。[講師用ガイド](docs/wslc-postgresql/facilitator.md)と[検証記録](docs/wslc-postgresql/verification.md)を確認し、開催前に実機で確認してください。
+
+## インフラ監視教材の実験用ファイル
+
+`docs/public/monitoring-intro/lab/` に Python 標準ライブラリーだけで動くローカル実験を格納します。受講者向けには教材トップから ZIP を配布し、Node.js は不要です。Python ファイルを変更したら `npm run package:monitoring` で配布 ZIP を再生成します。
+
+`npm run test:monitoring` は Python 3.10 以降が必要です。自動試験と Windows / WSL での実機確認の範囲は、[検証記録](docs/monitoring-intro/verification.md)を参照してください。

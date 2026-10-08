@@ -14,6 +14,13 @@ export default defineConfig({
   },
   globalStyles: path.join(__dirname, 'styles/global.css'),
   builderConfig: {
+    server: {
+      publicDir: {
+        name: path.join(__dirname, 'docs/public'),
+        // Local lab runs must never publish their DB, observations, or bytecode.
+        ignore: ['**/.state/**', '**/__pycache__/**', '**/*.pyc'],
+      },
+    },
     plugins: [
       pluginGoogleAnalytics({
         id: 'G-X84SLVB4Q4',

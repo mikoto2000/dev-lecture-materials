@@ -10,7 +10,10 @@
     "lint": "eslint .",
     "textlint": "textlint ./docs",
     "preview": "rspress preview",
-    "check:wslc": "node scripts/check-wslc-docs.mjs"
+    "check:wslc": "node scripts/check-wslc-docs.mjs",
+    "package:monitoring": "python3 scripts/package-monitoring-lab.py",
+    "check:monitoring": "node scripts/check-monitoring-docs.mjs",
+    "test:monitoring": "python3 docs/public/monitoring-intro/lab/test_lab.py"
   },
   "dependencies": {
     "@rspress/core": "2.0.23"

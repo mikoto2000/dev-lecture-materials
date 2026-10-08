@@ -14,6 +14,10 @@ hero:
       text: wslc を利用したコンテナ利用入門
       link: /wslc-postgresql/
 
+    - theme: alt
+      text: インフラ監視実践入門
+      link: /monitoring-intro/
+
 features:
   - title: Dev Container で構築する開発環境
     details: Docker・Docker Compose の基礎から、Dev Container による開発環境づくりまで学ぶ教材です。
@@ -21,4 +25,7 @@ features:
   - title: wslc を利用したコンテナ利用入門
     details: Windows 上で PostgreSQL を起動し、SQL とデータの永続化を体験する60〜90分の教材です。
     link: /wslc-postgresql/
+  - title: インフラ監視実践入門
+    details: URL の確認から始め、必要な操作・遅さ・通知・監視自身へ、一つずつ観測を足す実践教材です。
+    link: /monitoring-intro/
 ---
