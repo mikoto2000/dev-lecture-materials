@@ -2,10 +2,12 @@
 
 ## Setup
 
+Use Node.js 20.19+ or 22.12+ (Node.js 22 LTS recommended).
+
 Install the dependencies:
 
 ```bash
-npm install
+npm ci
 ```
 
 ## Get started
