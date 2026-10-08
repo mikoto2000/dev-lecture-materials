@@ -1,4 +1,9 @@
 [
+  {
+    "type": "file",
+    "name": "index",
+    "label": "この教材について"
+  },
   "INTRODUCTION.md",
   "Vol0.md",
   "Vol1.md",
