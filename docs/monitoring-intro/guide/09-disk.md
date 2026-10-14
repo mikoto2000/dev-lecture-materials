@@ -68,4 +68,4 @@ docker compose exec demo df -i /lab/.state
 - 空きが少ない場合、使用率以外に何を確認して対応時期を決めるか考える
 - この結果だけでは、Windows 全体の空き容量や保存失敗の原因を確定できないと説明する
 
-[6. ログで原因を絞る](./06-diagnose.md) / [8. CPU・メモリと応答時間を比べる](./10-cpu-memory.md)
+[6. ログで原因を絞る](./06-diagnose.md) / [8. CPU・メモリーと応答時間を比べる](./10-cpu-memory.md)
