@@ -76,7 +76,7 @@ python3 labctl.py delay 0
 連続した失敗と復旧を確認する例です。
 
 ```sh
-python3 monitor.py --path /items/1 --expect-name monitoring-demo --max-ms 500 --timeout 2 --count 30 --interval 2 --failures 2 --recoveries 2
+python3 monitor.py --path /items/1 --expect-name monitoring-demo --max-ms 500 --timeout 2 --count 30 --interval 2 --failures 3 --recoveries 2
 ```
 
 この有限回の監視が動いている間に、3 つ目のターミナルで故障を注入・解除します。

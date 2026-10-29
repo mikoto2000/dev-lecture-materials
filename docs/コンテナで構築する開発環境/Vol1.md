@@ -57,7 +57,6 @@ AH00558: httpd: Could not reliably determine the server's fully qualified domain
 AH00558: httpd: Could not reliably determine the server's fully qualified domain name, using 172.17.0.2. Set the 'ServerName' directive globally to suppress this message
 [Fri Jan 09 10:39:26.403849 2026] [mpm_event:notice] [pid 1:tid 1] AH00489: Apache/2.4.66 (Unix) configured -- resuming normal operations
 [Fri Jan 09 10:39:26.403951 2026] [core:notice] [pid 1:tid 1] AH00094: Command line: 'httpd -D FOREGROUND'
-[Fri Jan 09 10:42:08.567335 2026] [mpm_event:notice] [pid 1:tid 1] AH00491: caught SIGTERM, shutting down
 ```
 
 ただし、コンテナ環境は隔離された状態なので、ホスト OS からはアクセスできません。
@@ -89,6 +88,8 @@ Web ブラウザで `http://localhost:8080` にアクセスしてみましょう
 それでは開発環境として不便ですので、バインドマウントという仕組みを使い、
 手元の資材をコンテナに持ち込めるようにしましょう。
 
+前のコンテナが動いたままなら、そのターミナルで Ctrl + C を押して停止します。同じポート 8080 は同時に使えないためです。
+
 ```sh
 docker run -p 8080:80 -v "$(pwd):/usr/local/apache2/htdocs" httpd:latest
 ```
@@ -106,7 +107,16 @@ docker run -p 8080:80 -v "$(pwd):/usr/local/apache2/htdocs" httpd:latest
 カレントディレクトリに `index.html` ファイルを作成し、次の内容を記述します。
 
 ```html
-It's my created file!
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+    <title>It's my created file!</title>
+  </head>
+  <body>
+    <p>It's my created file!</p>
+  </body>
+</html>
 ```
 
 ファイルが作成出来たら、再度 Web ブラウザで `http://localhost:8080` にアクセスしてみましょう。
@@ -170,6 +180,8 @@ my-httpd:latest                                                                 
 #### カスタム Docker イメージの起動
 
 最後に、ビルドしたカスタム Docker イメージを起動します。
+前の手順で起動したコンテナが残っているとポート 8080 が使われます。そのターミナルで Ctrl + C を押すか、`docker ps` で確認したコンテナ ID を `docker stop <コンテナID>` で停止してください。
+
 次のコマンドを実行します。
 
 ```sh
@@ -211,6 +223,7 @@ services:
   # curl がインストールされた開発環境コンテナ
   app:
     image: curlimages/curl:8.18.0
+    # このイメージは既定で curl を実行して終了するため、常駐させる
     command: sleep infinity
 
   web:
@@ -233,6 +246,8 @@ services:
 ```sh
 docker compose up -d
 ```
+
+前の節で起動したコンテナが残っていると、ポート 8080 の衝突で失敗します。その場合は先に停止してください。
 
 ### サービスの動作確認
 
@@ -267,7 +282,7 @@ curl http://web:80
 
 
 app サービスと web サービスのふたつのサービスを定義し、動作確認まで行いました。
-今回は app サービスに curl コマンドをインストールしましたが、実際の開発環境では Java や Node.js などの開発ツールをインストールします。
+今回は app サービスに curl が入ったイメージを使いましたが、実際の開発環境では Java や Node.js などの開発ツールをインストールします。
 
 #### Docker Compose の停止
 

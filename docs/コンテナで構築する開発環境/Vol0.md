@@ -8,13 +8,13 @@ date: 2026/1/8
 
 ## 前提条件
 
-- Windows 11 Pro の PC
+- Windows 11 の PC（WSL 2 が利用できること。Home エディションでも可）
 
 ## VS Code のインストール
 
 次の公式サイトから VS Code をインストールしてください。
 
-https://code.visualstudio.com/
+[Visual Studio Code 公式サイト](https://code.visualstudio.com/)
 
 インストール時に、次のチェックボックスを ON にするのを推奨（便利）。
 
@@ -22,7 +22,6 @@ https://code.visualstudio.com/
 - `エクスプローラーのディレクトリコンテキストメニューに[Code で開く]アクションを追加する`
 
 インストール後、VS Code が起動できることを確認してください。
-
 
 ## WSL のインストール
 
@@ -40,7 +39,6 @@ wsl.exe --install
 
 インストールが完了したら、PC を再起動します。
 
-
 ### Linux ディストリビューションのインストール
 
 今回は、 Ubuntu 24.04 LTS をインストールします。
@@ -57,7 +55,6 @@ Linux のシェルが起動したら、インストール成功です。
 :::warning BIOS の仮想化支援機能が無効の場合
 この時点で、 BIOS の仮想化支援機能が無効になっている場合、エラーメッセージが表示されることがあります。その場合には、セクション「BIOS の仮想化支援機能の有効化」を参照して、BIOS の設定を変更し、もう一度 WSL のインストールをやり直してください。
 :::
-
 
 ## BIOS の仮想化支援機能の有効化
 
@@ -83,7 +80,6 @@ BIOS 設定画面で、仮想化支援機能を有効にします。
 BIOS 設定画面の操作方法は PC のメーカーやモデルによって異なります。次の手順で操作できない場合は、運営に問い合わせてください。
 
 また、 BIOS 設定は PC の基本設定に影響します。本資料で指定していない項目は**絶対に**変更しないでください。
-
 
 #### 手順
 
@@ -184,7 +180,6 @@ This message shows that your installation appears to be working correctly.
 To generate this message, Docker took the following steps:
  1. The Docker client contacted the Docker daemon.
  2. The Docker daemon pulled the "hello-world" image from the Docker Hub.
-    (arm64v8)
  3. The Docker daemon created a new container from that image which runs the
     executable that produces the output you are currently reading.
  4. The Docker daemon streamed that output to the Docker client, which sent it

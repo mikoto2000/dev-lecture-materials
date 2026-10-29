@@ -11,6 +11,9 @@ date: 2026/1/13
 - Vol.0 開発環境構築 を完了していること
 - Vol.1 Docker/Docker Compose 入門 相当の知識を有していること
   - (基本的な Docker/Docker Compose の使い方がわかれば OK)
+- VS Code に **Dev Containers** 拡張機能をインストールしていること
+  - WSL 上のフォルダーを開くため、**WSL** 拡張機能も必要です
+  - 拡張機能ビューで `Dev Containers` と `WSL` を検索してインストールします
 
 ## Dev container 概要
 
@@ -37,8 +40,11 @@ Dev container では `devcontainer.json` という設定ファイルを使い、
 WSL2 の Ubuntu 24.04 を起動し、次のコマンドで作業用ディレクトリを作成してください。
 
 ```sh
-mkdir -p ~/tmp/devcontainer-handson
+mkdir -p ~/tmp/devcontainer-handson/.devcontainer
+cd ~/tmp/devcontainer-handson
 ```
+
+`mkdir` の `-p` は、途中のディレクトリもまとめて作成する指定です。以降のファイルは、この `~/tmp/devcontainer-handson` をプロジェクトルートとして作成します。
 
 :::note
 Windows のファイルシステム上でも実行は可能だが、パフォーマンスが著しく落ちるため、 WSL2 のファイルシステム上で作業するようにしましょう。
@@ -59,7 +65,7 @@ Windows のファイルシステム上でも実行は可能だが、パフォー
 
 ### compose.yaml の作成
 
-AP サーバー兼開発サーバーの `dev` と、 DB サーバーの `postgres` をサービスとして定義します。
+AP サーバー兼開発サーバーの `app` と、 DB サーバーの `db` をサービスとして定義します。
 
 `.devcontainer/compose.yaml` に、次の内容を記述してください。
 
@@ -107,6 +113,7 @@ volumes:
 ### devcontainer.json の作成
 
 次に、主に「VS Code でどのコンテナに接続し、どんな拡張機能を使うか」を定義していきます。
+`.devcontainer/devcontainer.json` に、次の内容を記述してください。
 
 ```json
 {
@@ -139,7 +146,7 @@ volumes:
 
 ## VS Code の起動
 
-`.devcontainer` の格納されているディレクトリに移動し、次のコマンドを実行してください。
+プロジェクトルート（`.devcontainer` の親ディレクトリ）に移動し、次のコマンドを実行してください。
 
 ```sh
 code .
@@ -155,6 +162,8 @@ VS Code が表示され、左下に `WSL: Ubuntu-24.04` と表示されます。
 1. Ctrl+Shift+P -> `Open Folder in Container` と入力
 2. 候補に表示される `Dev Containers: Open Folder in Container...` を選択
 3. 作成した作業ディレクトリが表示されるので、そのまま Enter を押下
+
+すでに VS Code でそのフォルダーを開いている場合は、同じメニューの `Dev Containers: Reopen in Container` でも起動できます。
 
 VS Code のウィンドウがリロードされ、左下に `Dev Container: Java Dev Container` と表示されます。
 
@@ -194,5 +203,5 @@ DB に接続できたら OK です。
 
 開発環境の共有方法は簡単で、プロジェクトのリポジトリ（Git リポジトリなど）に `.devcontainer` を含めるだけです。
 
-こうすることで、 `git clone` をしたのち、プロジェクトディレクトリを VS Code + Dev container 拡張機能を使ってで開くだけで共通の開発環境を使用できます。
+こうすることで、 `git clone` をしたのち、プロジェクトディレクトリを VS Code + Dev container 拡張機能を使って開くだけで共通の開発環境を使用できます。
 

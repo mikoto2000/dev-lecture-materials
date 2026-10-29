@@ -58,7 +58,7 @@ docker compose --profile notifications logs --tail 20 notification-sink
 
 ## stats コマンドが使えない
 
-`docker compose version` と `docker compose stats --help` を確認します。古い Compose では利用できないことがあります。利用中の環境に合う公式の更新方法を確認し、知らないスクリプトを導入しないでください。対象の `demo` と `kuma` が起動していることも確認します。
+`docker compose version` と `docker compose stats --help` を確認します。古い Compose では利用できないことがあります。`docker compose stats` が使えない場合は、`docker stats` でコンテナー単位の統計を確認できます。状態だけなら `docker compose ps` を使います。利用中の環境に合う公式の更新方法を確認し、知らないスクリプトを導入しないでください。対象の `demo` と `kuma` が起動していることも確認します。
 
 ## df の空き容量が Windows と違う
 

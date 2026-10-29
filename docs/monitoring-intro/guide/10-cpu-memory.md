@@ -32,7 +32,7 @@ Linux コンテナーに対する Docker CLI のメモリ表示では、一部�
 
 **戻すコマンドは `docker compose exec demo python labctl.py delay 0` です。** CPU の負荷試験や大量のメモリ確保はしません。
 
-`demo-item` の現在の Request Timeout をメモし、実験中だけ **3秒**へ変更して保存します。次に、前の章で使った待ち時間を入れます。
+`demo-item` の現在の Request Timeout をメモし、実験中だけ **3秒**へ変更して保存します。次に、「5. 応答時間のグラフとタイムアウトを区別する」の章で使った待ち時間を入れます。
 
 ```powershell
 docker compose exec demo python labctl.py delay 0.8
