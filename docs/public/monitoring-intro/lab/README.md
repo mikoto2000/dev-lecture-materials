@@ -51,14 +51,14 @@ docker compose logs --tail 20 demo
 
 一行ずつ実行し、故障中と解除後を観察します。すべてを一括実行すると変化を見逃します。
 
-- `stop demo`：アプリを停止します。Kuma は起動したままです。
-- `db-unavailable on`：専用 SQLite ファイルを一時退避します。`/health` は 200 のまま、
-  SQLite を毎回読み取り専用で開いて SELECT する `/items/1` は 503 になります。
-  存在しない DB を勝手に新規作成することはありません。
-- `wrong-data on`：SQLite の `name` が `wrong-demo` になります。HTTP 200 だけでは検出できません。
-  正常値は `{"id": 1, "name": "monitoring-demo"}` です。
-- `delay`：`/items/1` にだけ 0〜2 秒の待ち時間を入れます。グラフでの遅延観察と、
-  タイムアウトによる DOWN 判定は分けて考えます。
+- `stop demo`：アプリを停止する。Kuma は起動したまま。
+- `db-unavailable on`：専用 SQLite ファイルを一時退避する。`/health` は 200 のまま、
+  SQLite を毎回読み取り専用で開いて SELECT する `/items/1` は 503 になる。
+  存在しない DB を勝手に新規作成することはない。
+- `wrong-data on`：SQLite の `name` が `wrong-demo` になる。HTTP 200 だけでは検出できない。
+  正常値は `{"id": 1, "name": "monitoring-demo"}` である。
+- `delay`：`/items/1` にだけ 0〜2 秒の待ち時間を入れる。グラフでの遅延観察と、
+  タイムアウトによる DOWN 判定は分けて考える。
 
 SQLite はファイル型 DB です。この実験は、独立した DB サーバーの停止やネットワーク障害を
 そのまま再現するものではありません。
@@ -137,15 +137,15 @@ docker compose --profile notifications down --volumes
 
 ## 安全に片付けるための注意
 
-- プロジェクト名は `monitoring-intro-lab` です。他の教材のコンテナやボリュームは操作しません。
-- 同じ PC で複数人・複数コピーを同時に使う場合は、たとえば `docker compose -p monitoring-pair2`
-  をすべての操作で一貫して使い、`compose.yaml` のホスト側ポート 13001 と 18080 も空いている
-  別番号へ変更します。コンテナ側のポートと Kuma の監視 URL は変更しません。
-- ポートが競合した場合は、何が使っているか確認します。知らないプロセスは停止しません。
-- Docker 全体を対象にした削除コマンドや、一括クリーンアップは使いません。
-- `requests.jsonl` はアプリの実験ログです。実験中に増えるため、不要になったら上の停止・reset
-  手順で片付けます。Compose の標準出力ログは各サービス最大 1 MiB × 3 ファイルです。
-- これは信頼できるローカル環境での学習用です。本番運用の堅牢化・バックアップ設計ではありません。
+- プロジェクト名は `monitoring-intro-lab` である。他の教材のコンテナやボリュームは操作しない。
+- 同じ PC を複数人・複数コピーで同時に使う場合は、たとえば `docker compose -p monitoring-pair2`
+  をすべての操作で一貫して使う。`compose.yaml` のホスト側ポート 13001 と 18080 も、
+  空いている別番号へ変更する。コンテナ側のポートと Kuma の監視 URL は変更しない。
+- ポートが競合した場合は、何が使っているか確認する。知らないプロセスは停止しない。
+- Docker 全体を対象にした削除コマンドや、一括クリーンアップは使わない。
+- `requests.jsonl` はアプリの実験ログである。実験中に増えるため、不要になったら上の停止・reset
+  手順で片付ける。Compose の標準出力ログは各サービス最大 1 MiB × 3 ファイルである。
+- これは信頼できるローカル環境での学習用である。本番運用の堅牢化・バックアップ設計ではない。
 
 ## 任意の付録と開発者向けテスト
 
@@ -154,5 +154,6 @@ docker compose --profile notifications down --volumes
 
 教材の開発者は Python 3.10 以上で `python3 test_container.py` と `python3 test_lab.py` を実行できます。
 後者はポート 18080 が空いている必要があります。前者は一時ディレクトリと動的ポートを使います。
-利用者の実験データは初期化しません。コンテナ構成の静的検証と Docker 上の統合テストは
-リポジトリの `scripts/check-monitoring-compose.py` と `scripts/test-compose-monitoring.py` です。
+利用者の実験データは初期化しません。コンテナ構成の静的検証は
+`scripts/check-monitoring-compose.py` で行います。Docker 上の統合テストは
+`scripts/test-compose-monitoring.py` で行います。

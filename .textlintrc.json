@@ -5,6 +5,11 @@
     }
   },
   "rules": {
-    "preset-ja-technical-writing": true
+    "preset-ja-technical-writing": {
+      "max-kanji-continuous-len": {
+        "max": 6,
+        "allow": ["仮想化支援機能"]
+      }
+    }
   }
 }

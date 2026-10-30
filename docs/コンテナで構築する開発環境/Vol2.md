@@ -10,10 +10,10 @@ date: 2026/1/13
 
 - Vol.0 開発環境構築 を完了していること
 - Vol.1 Docker/Docker Compose 入門 相当の知識を有していること
-  - (基本的な Docker/Docker Compose の使い方がわかれば OK)
+  - （基本的な Docker/Docker Compose の使い方がわかれば OK）
 - VS Code に **Dev Containers** 拡張機能をインストールしていること
-  - WSL 上のフォルダーを開くため、**WSL** 拡張機能も必要です
-  - 拡張機能ビューで `Dev Containers` と `WSL` を検索してインストールします
+  - WSL 上のフォルダーを開くため、**WSL** 拡張機能も必要である
+  - 拡張機能ビューで `Dev Containers` と `WSL` を検索してインストールする
 
 ## Dev container 概要
 
@@ -29,14 +29,14 @@ Dev container では `devcontainer.json` という設定ファイルを使い、
 コンテナ上の開発環境設定をコードとして管理します。
 (VS Code の設定やインストールする拡張機能・拡張機能設定など)
 
-単に Docker コンテナを起動するだけでは、エディタ設定やツール構成までは共有できませんが、
-`devcontainer.json` を定義することで、開発環境そのものをチームで再現可能な形で共有できます。
+単に Docker コンテナを起動するだけでは、エディタ設定やツール構成までは共有できません。
+`devcontainer.json` を定義すれば、開発環境そのものを再現可能な形でチームに共有できます。
 
 ![Dev Container](./images/vol2/dev-container.png)
 
 ## 作業用ディレクトリの作成
 
-これ以降の作業は、 WSL2 のファイルシステム上に、作業用ディレクトリを作成し、そこで作業を行います。
+これ以降の作業は、 WSL2 のファイルシステム上に作業用ディレクトリを作成し、そこで進めます。
 WSL2 の Ubuntu 24.04 を起動し、次のコマンドで作業用ディレクトリを作成してください。
 
 ```sh
@@ -48,6 +48,7 @@ cd ~/tmp/devcontainer-handson
 
 :::note
 Windows のファイルシステム上でも実行は可能だが、パフォーマンスが著しく落ちるため、 WSL2 のファイルシステム上で作業するようにしましょう。
+
 :::
 
 
@@ -60,7 +61,7 @@ Windows のファイルシステム上でも実行は可能だが、パフォー
 - AP サーバー: Spring Boot 組み込み Tomcat
 - DB サーバー: PostgreSQL
 
-このように、複数サーバーが必要となるので、 Docker Compose による環境設定を行い、それを基に Dev container の環境設定を行っていきます。
+このように複数サーバーが必要になるため、 Docker Compose で環境を定義し、それを基に Dev container の設定を進めていきます。
 
 
 ### compose.yaml の作成
@@ -152,7 +153,7 @@ volumes:
 code .
 ```
 
-`Do you trust the authors of the files in this folder?` というダイアログが表示されたら、 `Yes, I trust the authors` をクリックしてください。
+`Do you trust the authors of the files in this folder?` というダイアログが表示されます。`Yes, I trust the authors` をクリックしてください。
 
 VS Code が表示され、左下に `WSL: Ubuntu-24.04` と表示されます。
 
@@ -173,8 +174,8 @@ VS Code のウィンドウがリロードされ、左下に `Dev Container: Java
 
 ## Dev container 開発環境の動作確認
 
-ここから Spring Boot プロジェクトを作って DB へ接続するプロジェクトを作るのは時間がかかりすぎるので、
-代わりに app コンテナに PostgreSQL クライアントをインストールし、そこから psql で DB に繋がることを確認します。
+Spring Boot プロジェクトを作って DB へ接続するのは時間がかかりすぎます。
+代わりに app コンテナへ PostgreSQL クライアントをインストールし、そこから psql で DB に繋がることを確認します。
 
 ### PostgreSQL クライアントのインストール
 
@@ -196,7 +197,7 @@ PGPASSWORD=${MAIN_DB_PASSWORD} psql -U ${MAIN_DB_USER} -h ${MAIN_DB_HOSTNAME} -d
 
 DB に接続できたら OK です。
 
-後は、 Spring Initializr などで Spring Boot プロジェクトを作成し、 .devcontainer と同じディレクトリに格納すれば、 Spring Boot + PostgreSQL のプロジェクトの開発ができます。
+後は、 Spring Initializr などで Spring Boot プロジェクトを作成し、 `.devcontainer` と同じディレクトリに格納します。これで Spring Boot + PostgreSQL のプロジェクトの開発ができます。
 
 
 ## 開発環境の共有方法

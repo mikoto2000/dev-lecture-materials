@@ -76,4 +76,11 @@ Kuma に登録する監視先は **`http://demo:18080/health`** です。Compose
 
 Kuma の設定・履歴とアプリのデータは、別々の専用名前付きボリュームに保存します。単なる stop/start や down では消えません。故障設定も再起動だけでは解除されないので、解除コマンドを使います。
 
+## チェックポイント
+
+- `docker version` で Client と Server の両方が表示される
+- `docker compose ps` で kuma と demo が動いている
+- ブラウザーで開く `127.0.0.1` と、Kuma に登録する `demo` の役割の違いを説明する
+- 故障を起こす前に、戻し方のコマンドを確認した
+
 [教材トップ](../index.md) / [1. URL を登録する](./01-url.md)

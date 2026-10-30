@@ -50,7 +50,7 @@ Docker イメージ自体は、 Dockerfile というファイルから生成さ�
 docker run httpd:latest
 ```
 
-次のような実行結果が表示されたと思います。これで Apache HTTP Server コンテナが起動します。
+次のような実行結果が表示されます。これで Apache HTTP Server コンテナが起動します。
 
 ```sh
 AH00558: httpd: Could not reliably determine the server's fully qualified domain name, using 172.17.0.2. Set the 'ServerName' directive globally to suppress this message
@@ -65,8 +65,8 @@ AH00558: httpd: Could not reliably determine the server's fully qualified domain
 
 ### ポートフォワーディングでアクセスできるようにする
 
-ホスト OS からコンテナにアクセスするために、ポートフォワーディングを設定します。
-ポートフォワーディング設定を行うことで、ホスト OS の特定のポートへのアクセスをコンテナ内の特定のポートに転送できます。
+ホスト OS からコンテナへアクセスするために、ポートフォワーディングを設定します。
+ポートフォワーディングを設定すると、ホスト OS の特定のポートへのアクセスをコンテナ内の特定のポートに転送できます。
 
 ```sh
 docker run -p 8080:80 httpd:latest
@@ -74,7 +74,7 @@ docker run -p 8080:80 httpd:latest
 
 - `-p 8080:80`: ホスト OS のポート 8080 をコンテナ内のポート 80 に転送する設定
 
-このように、ポートフォワーディング設定をすることで、ホストのポート 8080 から コンテナのポート 80(Apache HTTP Server) にアクセスできるようになります。
+このように、ポートフォワーディングを設定すると、ホストのポート 8080 から コンテナのポート 80(Apache HTTP Server) へアクセスできるようになります。
 Web ブラウザで `http://localhost:8080` にアクセスしてみましょう。
 `It works!` と表示されたら成功です。
 
@@ -83,10 +83,10 @@ Web ブラウザで `http://localhost:8080` にアクセスしてみましょう
 
 ### バインドマウントでコンテンツを変更できるようにする
 
-ポートフォワーディング設定でコンテナにアクセスできるようになりましたが、
-このままではコンテナに手元の資材を持ち込むことができません。
+ポートフォワーディングでコンテナへアクセスできるようになりましたが、
+このままではコンテナへ手元の資材を持ち込めません。
 それでは開発環境として不便ですので、バインドマウントという仕組みを使い、
-手元の資材をコンテナに持ち込めるようにしましょう。
+手元の資材をコンテナへ持ち込めるようにしましょう。
 
 前のコンテナが動いたままなら、そのターミナルで Ctrl + C を押して停止します。同じポート 8080 は同時に使えないためです。
 
@@ -125,7 +125,7 @@ docker run -p 8080:80 -v "$(pwd):/usr/local/apache2/htdocs" httpd:latest
 
 ### カスタム Docker イメージの作成
 
-Docker イメージの基本的な使い方は理解できたと思います。
+Docker イメージの基本的な使い方は理解できたはずです。
 次に、カスタム Docker イメージを作成してみましょう。
 
 #### Dockerfile の作成
@@ -188,8 +188,9 @@ my-httpd:latest                                                                 
 docker run -p 8080:80 -v "$(pwd):/var/www/html" my-httpd:latest
 ```
 
-- `-v "$(pwd):/var/www/html"`: カレントディレクトリをコンテナ内の `/var/www/html` ディレクトリにマウントする設定
-  (`/var/www/html` は Ubuntu ベースの Apache HTTP Server のデフォルトのドキュメントルート)
+- `-v "$(pwd):/var/www/html"`: カレントディレクトリをコンテナ内の `/var/www/html` にマウントする設定
+
+`/var/www/html` は Ubuntu ベースの Apache HTTP Server の既定のドキュメントルートです。
 
 再度 Web ブラウザで `http://localhost:8080` にアクセスしてみましょう。
 `It's my created file!` と表示されれば成功です。

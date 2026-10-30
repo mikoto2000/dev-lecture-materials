@@ -29,7 +29,7 @@ date: 2026/1/8
 
 WSL (Windows Subsystem for Linux) をインストールします。
 
-スタートメニューから Windows Terminal を起動し、次コマンドを実行します。
+スタートメニューから Windows Terminal を起動し、次のコマンドを実行します。
 
 ```powershell
 wsl.exe --install
@@ -42,7 +42,7 @@ wsl.exe --install
 ### Linux ディストリビューションのインストール
 
 今回は、 Ubuntu 24.04 LTS をインストールします。
-再起動後、再度 Windows Terminal を起動し、次コマンドを実行します。
+再起動後、再度 Windows Terminal を起動し、次のコマンドを実行します。
 
 ```powershell
 wsl.exe --install Ubuntu-24.04
@@ -53,7 +53,8 @@ wsl.exe --install Ubuntu-24.04
 Linux のシェルが起動したら、インストール成功です。
 
 :::warning BIOS の仮想化支援機能が無効の場合
-この時点で、 BIOS の仮想化支援機能が無効になっている場合、エラーメッセージが表示されることがあります。その場合には、セクション「BIOS の仮想化支援機能の有効化」を参照して、BIOS の設定を変更し、もう一度 WSL のインストールをやり直してください。
+この時点で BIOS の仮想化支援機能を無効にしていると、エラーメッセージが表示されることもあります。その場合は、セクション「BIOS の仮想化支援機能の有効化」を参照して BIOS の設定を変更し、もう一度 WSL のインストールをやり直してください。
+
 :::
 
 ## BIOS の仮想化支援機能の有効化
@@ -83,14 +84,14 @@ BIOS 設定画面の操作方法は PC のメーカーやモデルによって�
 
 #### 手順
 
-次のような名前のセクションを探して開いてください:
+次のような名前のセクションを探して開いてください。
 
 - Advanced
 - Advanced BIOS Features
 - Advanced → CPU Configuration
 - Northbridge / Chipset
 
-そのセクションの中から、次のような名前の設定項目を探してください:
+そのセクションの中から、次のような名前の設定項目を探してください。
 
 - Intel Virtualization Technology
 - Intel VT-x
