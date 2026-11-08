@@ -47,7 +47,7 @@ Docker イメージ自体は、 Dockerfile というファイルから生成さ�
 ### Apache HTTP Server コンテナの起動
 
 ```sh
-docker run httpd:latest
+docker run httpd:2.4
 ```
 
 次のような実行結果が表示されます。これで Apache HTTP Server コンテナが起動します。
@@ -69,7 +69,7 @@ AH00558: httpd: Could not reliably determine the server's fully qualified domain
 ポートフォワーディングを設定すると、ホスト OS の特定のポートへのアクセスをコンテナ内の特定のポートに転送できます。
 
 ```sh
-docker run -p 8080:80 httpd:latest
+docker run -p 8080:80 httpd:2.4
 ```
 
 - `-p 8080:80`: ホスト OS のポート 8080 をコンテナ内のポート 80 に転送する設定
