@@ -15,7 +15,7 @@
 
 PowerShell でコマンドをコピーして実行できる方が対象です。コンテナーと SQL が初めてでも進められます。サーバー運用や本番環境の構築は扱いません。
 
-ここでは Windows に含まれる WSL のコンテナー CLI、`wslc.exe` を使います。公式の前提条件は **WSL 2.9.3 以降**です。WSL パッケージのバージョンと、ディストリビューションの実行方式である WSL 1 / WSL 2 は別のものです。
+ここでは WSL に同梱されるコンテナー CLI、`wslc.exe` を使います。公式の前提条件は **WSL 2.9.3 以降**です。WSL パッケージのバージョンと、ディストリビューションの実行方式である WSL 1 / WSL 2 は別のものです。[Microsoft の WSL コンテナー導入手順](https://learn.microsoft.com/ja-jp/windows/wsl/tutorials/wsl-containers)
 
 ## 学習の進め方
 

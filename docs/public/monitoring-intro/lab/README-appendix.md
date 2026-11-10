@@ -2,8 +2,12 @@
 
 本編は [Uptime Kuma と Compose のラボ](README.md) です。この付録は、
 すでに Python を使える方が自作チェッカーの仕組みを調べるための別実験です。
-本編を完了するために実行する必要はありません。Compose の `demo` と同じ
-ポートを使うため、この付録を試す前に `docker compose stop demo` で停止します。
+本編を完了するために実行する必要はありません。この付録では Compose の `demo` と同じポートを使います。
+始める前に本編の `compose.yaml` があるフォルダーで、次のコマンドを実行します。
+
+```powershell
+docker compose --profile notifications stop
+```
 
 Ubuntu の Bash と Python 3.10 以上を使います。Python 標準ライブラリだけで動き、
 追加パッケージ、Docker、認証情報、本番環境、外部ネットワークは不要です。

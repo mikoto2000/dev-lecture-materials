@@ -19,6 +19,7 @@ def archive_bytes():
         for name in NAMES:
             info = zipfile.ZipInfo('monitoring-lab/' + name, (2026, 1, 1, 0, 0, 0))
             info.compress_type = zipfile.ZIP_DEFLATED
+            info.create_system = 3  # Use Unix file metadata on Windows as well.
             info.external_attr = 0o100644 << 16
             archive.writestr(info, (LAB / name).read_bytes())
     return buffer.getvalue()

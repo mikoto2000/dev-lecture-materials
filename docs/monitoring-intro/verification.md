@@ -1,5 +1,18 @@
 # 検証記録
 
+## WSL 2 上の Docker Engine での確認（2026-11-11）
+
+Windows 11、WSL 3.0.5.0、Ubuntu 24.04.5、Docker Engine 29.9.3、Compose v5.7.0 を使用しました。既存サービスとの競合を避けるため、配布 ZIP の検証用コピーで、ホスト側ポートを 23001 と 28080 に変更しました。コンテナー側のポートは教材と同じです。
+
+- Windows から Kuma の初期設定ページとアプリの `/health` に HTTP 接続
+- 実際の Kuma に画面と同じ設定を API で登録し、HTTP・キーワード・JSON Query の判定を確認
+- 2秒の遅延に対し、タイムアウト1秒で Down、3秒で Up になることを確認
+- 再試行2回の設定で Pending → Pending → Down を確認。Test・Down・Up の Webhook を受信器で確認
+- アプリ停止・再開、SQLite ファイルの退避と復旧、誤データ、遅延、停止中のリセットを確認
+- `df`、`docker compose stats`、Kuma からの `getent` と `ping` を実行
+- `down` 後もデータが残ることと、`down --volumes` で検証用ボリュームが削除されることを確認
+- WSL 上で Python ラボと資源コマンドの試験25件に成功
+
 ## 対象
 
 - 改訂日: 2026-10-08
@@ -54,7 +67,7 @@ Compose の CI は、固定版イメージの起動、サービス名による�
 
 ## 限界
 
-- Windows / Docker Desktop の実機通し操作は未実施
+- Windows 版 Docker Desktop を使った実機通し操作は未実施
 - クラウド環境のブラウザー用ソケット制約により、GUI の描画・クリック・スクリーンショットは未検証
 - 実動作試験は公式ソースの Node.js 24 環境。公式 Docker イメージの Node.js 22 環境とは区別
 - Python 3.10 / 3.11 の実行は未実施（文法の確認と実行試験は別）

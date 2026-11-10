@@ -12,7 +12,7 @@ PowerShell で実行します。ホストに psql を入れる必要はありま
 wslc exec -it wslc-workshop-db psql -h 127.0.0.1 -U postgres -d workshop -W
 ```
 
-`Password for user postgres:` に `workshop-local-only` を入力して Enter を押します。入力文字が表示されなくても正常です。
+`Password:` と表示されたら、`workshop-local-only` を入力して Enter を押します。入力文字は画面に表示されません。
 
 `workshop=#` が出たら、今いるのは psql の画面です。`-h 127.0.0.1` は **コンテナー内**の TCP 接続を指定しています。前章の Windows 側 15432 番を通る接続ではありません。`-W` はパスワード入力を要求します。2章では初回の TCP 認証方式も指定しています。`-W` 自体がサーバーの認証を有効にするわけではありません。
 

@@ -6,7 +6,7 @@
 
 ## 開催前に必ず実機で通す
 
-この教材は Windows の wslc 実行確認が未実施です。資料のビルド成功と、wslc ハンズオン成功は別です。開催予定の Windows / WSL / wslc で全章を一度通し、以下を記録してください。
+[検証記録](./verification.md)に Windows での実施結果をまとめています。開催前には、受講者が使う Windows / WSL / wslc で全章を一度通し、以下を記録してください。
 
 - Windows ビルド、`wsl --version`、`wslc version`
 - イメージの `wslc image inspect postgres:17` の結果・確認日時（必要なら digest）

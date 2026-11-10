@@ -22,7 +22,7 @@ wslc container start wslc-workshop-db
 wslc exec wslc-workshop-db pg_isready -h 127.0.0.1 -U postgres -d workshop
 ```
 
-`accepting connections` が出るまで待ってから、前章と同じ方法で接続します。
+`no response` なら数秒待って `pg_isready` を再実行します。`accepting connections` が出たら、前章と同じ方法で接続します。
 
 ```powershell
 wslc exec -it wslc-workshop-db psql -h 127.0.0.1 -U postgres -d workshop -W
@@ -46,7 +46,7 @@ wslc container remove wslc-workshop-db
 wslc volume inspect wslc-workshop-pgdata
 ```
 
-`remove` に `-v` や `--volumes` を追加しないでください。ボリュームが残っていることを確認したら、2章と同じ設定で新しいコンテナーを作ります。
+ボリュームが残っていることを確認したら、2章と同じ設定で新しいコンテナーを作ります。名前や Windows 側の公開ポートを変更して進めた場合は、ここでも変更後の値を使ってください。
 
 ```powershell
 wslc run -d --name wslc-workshop-db `

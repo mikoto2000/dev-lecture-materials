@@ -15,7 +15,7 @@
 
 ## 使うものと前提
 
-Windows の PowerShell と Docker Desktop の Linux コンテナーを使います。コマンドは本編を通して PowerShell に統一します。Uptime Kuma、実験アプリ、必要な章だけ起動するローカル通知受信器を Docker Compose で動かします。
+本編のコマンド例は Windows の PowerShell と Docker Desktop の Linux コンテナーを前提にしています。WSL 2 に Docker Engine を直接導入済みの場合は、[準備の読み替え手順](./guide/00-prepare.md)で進められます。Uptime Kuma、実験アプリ、ローカル通知受信器を Docker Compose で動かします。
 
 - PC への Python / Node.js の直接インストールは不要
 - 外部の Slack、メール、Webhook アカウントや認証情報は不要

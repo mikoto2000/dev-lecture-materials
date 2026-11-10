@@ -52,12 +52,12 @@ npm run preview
 
 SQL と PowerShell の例は `docs/public/wslc-postgresql/examples/` に格納し、教材トップからダウンロードできます。教材を読む受講者に Node.js は不要です。
 
-Windows / WSL / wslc と PostgreSQL 実サービスの操作試験は未実施です。[講師用ガイド](docs/wslc-postgresql/facilitator.md)と[検証記録](docs/wslc-postgresql/verification.md)を確認し、開催前に実機で確認してください。
+Windows 上の wslc で PostgreSQL の起動、SQL、永続化、後片付けを確認しました。検証したバージョンと操作範囲は[検証記録](docs/wslc-postgresql/verification.md)を参照してください。開催前は[講師用ガイド](docs/wslc-postgresql/facilitator.md)に沿って受講環境で確認してください。
 
 ## インフラ監視教材の実験用ファイル
 
-`docs/public/monitoring-intro/lab/` に Uptime Kuma 2.5.5 と学習用アプリの Compose 環境を格納します。本編は Windows PowerShell / Docker Desktop を使用し、監視は Kuma の GUI で設定します。受講者向けには教材トップから ZIP を配布します。ラボを変更したら `npm run package:monitoring` で ZIP を再生成します。
+`docs/public/monitoring-intro/lab/` に Uptime Kuma 2.5.5 と学習用アプリの Compose 環境を格納します。本編は Windows PowerShell / Docker Desktop を基本とし、WSL 2 上の Docker Engine で進める手順もあります。監視は Kuma の GUI で設定します。受講者向けには教材トップから ZIP を配布します。ラボを変更したら `npm run package:monitoring` で ZIP を再生成します。
 
 自作の `monitor.py` / `watchdog.py` は任意の補足です。本編の監視には使用しません。
 
-`npm run test:monitoring` は Python 3.10 以降が必要です。`check:monitoring-compose` は Docker CLI / Compose V2、`test:monitoring-compose` は Docker の実行環境も必要です。後者は試験専用のプロジェクトとボリュームを作成し、終了時に削除します。自動試験と Windows / WSL での実機確認の範囲は、[検証記録](docs/monitoring-intro/verification.md)を参照してください。
+`npm run test:monitoring` は Python 3.10 以降が必要です。`check:monitoring-compose` は Docker CLI と Compose（v2 または v5）、`test:monitoring-compose` は Docker の実行環境も必要です。後者は試験専用のプロジェクトとボリュームを作成し、終了時に削除します。自動試験と Windows / WSL での実機確認の範囲は、[検証記録](docs/monitoring-intro/verification.md)を参照してください。

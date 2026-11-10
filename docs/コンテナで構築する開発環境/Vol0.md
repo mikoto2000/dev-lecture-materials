@@ -27,28 +27,27 @@ date: 2026/1/8
 
 ### WSL の有効化
 
-WSL (Windows Subsystem for Linux) をインストールします。
+WSL (Windows Subsystem for Linux) と Ubuntu 24.04 LTS をインストールします。すでに Ubuntu 24.04 をインストールしている場合は、次の「Ubuntu 24.04 の起動」へ進んでください。
 
-スタートメニューから Windows Terminal を起動し、次のコマンドを実行します。
+Windows Terminal を管理者として起動し、PowerShell で次のコマンドを実行します。
 
 ```powershell
-wsl.exe --install
+wsl.exe --install -d Ubuntu-24.04
 ```
 
 「ユーザーアカウント制御」のダイアログが表示された場合は「はい」をクリックします。
 
-インストールが完了したら、PC を再起動します。
+再起動を求められた場合は、作業中のファイルを保存してから PC を再起動します。
 
-### Linux ディストリビューションのインストール
+### Ubuntu の初期設定
 
-今回は、 Ubuntu 24.04 LTS をインストールします。
-再起動後、再度 Windows Terminal を起動し、次のコマンドを実行します。
+Ubuntu の画面が自動で開かなければ、PowerShell で次のコマンドを実行します。
 
 ```powershell
-wsl.exe --install Ubuntu-24.04
+wsl.exe -d Ubuntu-24.04
 ```
 
-インストールが完了したら、WSL の初期設定を促されるので、ユーザー名とパスワードを設定します。
+初回起動時に、Ubuntu のユーザー名とパスワードを設定します。
 
 Linux のシェルが起動したら、インストール成功です。
 
@@ -95,7 +94,6 @@ BIOS 設定画面の操作方法は PC のメーカーやモデルによって�
 
 - Intel Virtualization Technology
 - Intel VT-x
-- VT-d
 - SVM Mode（AMD）
 - CPU Virtualization
 - Virtualization Technology
@@ -116,6 +114,7 @@ BIOS のどこかに `Save & Exit` という名前のメニューがあるはず
 
 Ubuntu 24.04 を起動するには、スタートメニューから Ubuntu 24.04 を選択して起動します。
 
+Windows の PowerShell で `wsl.exe -l -v` を実行し、`Ubuntu-24.04` の `VERSION` が `2` であることを確認してください。既存の Ubuntu 24.04 が WSL 1 の場合は、[Microsoft の移行手順](https://learn.microsoft.com/ja-jp/windows/wsl/install#upgrade-version-from-wsl-1-to-wsl-2)を参照してください。
 
 ## Docker のインストール
 
@@ -128,7 +127,7 @@ Docker インストールに必要な apt リポジトリを Ubuntu に登録し
 ```sh
 # Add Docker's official GPG key:
 sudo apt update
-sudo apt install ca-certificates curl
+sudo apt install -y ca-certificates curl
 sudo install -m 0755 -d /etc/apt/keyrings
 sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
 sudo chmod a+r /etc/apt/keyrings/docker.asc
@@ -139,6 +138,7 @@ Types: deb
 URIs: https://download.docker.com/linux/ubuntu
 Suites: $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")
 Components: stable
+Architectures: $(dpkg --print-architecture)
 Signed-By: /etc/apt/keyrings/docker.asc
 EOF
 
@@ -153,15 +153,15 @@ Docker エンジンをインストールします。
 sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 ```
 
-また、 Docker コマンドを sudo なしで実行できるように、現在のユーザーを `docker` グループに追加します。
+Docker デーモンの状態を `systemctl is-active docker` で確認します。`activating` が表示されたら数秒待って再確認します。停止している場合は `sudo systemctl start docker` で起動し、`active` になってから進みます。
+
+この教材では、Docker コマンドを `sudo` なしで実行できるように、現在のユーザーを `docker` グループに追加します。このグループのメンバーは Docker を通じて Ubuntu の root 相当の権限を持ちます。[Docker Engine のインストール後の設定](https://docs.docker.com/engine/install/linux-postinstall/)
 
 ```sh
-sudo gpasswd -a <ユーザー名> docker
+sudo gpasswd -a "$(id -un)" docker
 ```
 
-`<ユーザー名>` は、Ubuntu のユーザー名に置き換えてください。
-
-変更を反映するため、Ubuntu を再起動するか、ログアウトして再度ログインしてください。
+`newgrp docker` を実行して、現在のシェルでグループの変更を反映します。`id -nG` の出力に `docker` が含まれることを確認してください。
 
 
 ### Docker の動作確認
@@ -201,5 +201,6 @@ For more examples and ideas, visit:
 
 ## 参考資料
 
-- [Linux 用 Windows サブシステムに関する FAQ | Microsoft Learn](https://learn.microsoft.com/ja-jp/windows/wsl/faq#can-i-run-wsl-2-in-a-virtual-machine-)
+- [WSL のインストール | Microsoft Learn](https://learn.microsoft.com/ja-jp/windows/wsl/install)
+- [WSL のトラブルシューティング | Microsoft Learn](https://learn.microsoft.com/ja-jp/windows/wsl/troubleshooting)
 - [Ubuntu | Docker Docs](https://docs.docker.com/engine/install/ubuntu/)

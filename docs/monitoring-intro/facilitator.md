@@ -16,7 +16,7 @@ Docker Desktop の場合、`df` やコンテナー統計は Linux コンテナ�
 
 ## 開催前の準備
 
-- Windows / Docker Desktop の Linux コンテナーと Compose V2 が使える
+- Docker で Linux コンテナーを起動でき、`docker compose`（v2 または v5）が使える
 - ZIP の展開と PowerShell の作業場所をそろえられる
 - 13001 / 18080 番が空いている
 - Uptime Kuma 2.5.5 のイメージを取得できる
@@ -31,7 +31,7 @@ Docker Desktop の場合、`df` やコンテナー統計は Linux コンテナ�
 
 ## 安全上の約束
 
-コマンドは PowerShell に統一します。Python の直接実行が必要なのは補足だけです。Docker 内部の `demo` という名前と、Windows のブラウザーで使う `127.0.0.1` を区別します。
+本編は PowerShell で示します。WSL の Docker Engine を使う場合の読み替えは[準備](./guide/00-prepare.md)に記載しています。Docker 内部の `demo` という名前と、Windows のブラウザーで使う `127.0.0.1` を区別します。
 
 故障は専用アプリの停止、学習用 SQLite ファイルの退避、既知データの変更、最大2秒の待ち時間に限定します。ディスクを満杯にする操作、機械全体の負荷試験、共有サービスの停止は行いません。
 

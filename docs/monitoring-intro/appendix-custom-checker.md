@@ -6,9 +6,9 @@
 
 ## 本編と環境を混ぜない
 
-この補足だけは WSL 2 / Ubuntu の Bash と Python 3.10 以降を使います。PowerShell で本編の Compose を停止してから、別のフォルダーへ ZIP を展開してください。どちらも 18080 番を使うため、同時には起動しません。
+この補足では WSL 2 / Ubuntu の Bash と Python 3.10 以降を使います。本編で使ったシェルから本編の `compose.yaml` があるフォルダーに移動し、Compose を停止します。補足用の ZIP は別のフォルダーへ展開してください。どちらも既定で 18080 番を使います。
 
-**Windows の PowerShell:**
+本編に Windows の PowerShell を使った場合は、次のコマンドで停止してから Ubuntu に移ります。本編に Ubuntu の Bash を使った場合は、1行目だけを Bash で実行します。
 
 ```powershell
 docker compose --profile notifications stop
@@ -35,6 +35,11 @@ python3 monitor.py --path /items/1 --expect-name monitoring-demo --count 30 --in
 
 ```bash
 python3 monitor.py --path /items/1 --expect-name monitoring-demo --timeout 2 --max-ms 500 --count 30 --interval 2 --failures 3 --recoveries 2
+```
+
+監視の `CHECK` が表示されたら、監視を動かしたまま、同じフォルダーを開いた3つ目の Bash で実行します。
+
+```bash
 python3 watchdog.py --max-age 5
 ```
 

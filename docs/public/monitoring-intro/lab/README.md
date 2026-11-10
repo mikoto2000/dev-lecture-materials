@@ -7,6 +7,9 @@ Windows の PowerShell と、起動済みの Docker Desktop（Linux コンテナ
 ZIP をすべて展開し、PowerShell で `compose.yaml` のあるフォルダーへ移動してください。
 単一の Python ファイルだけをダウンロードしても、この手順は実行できません。
 
+WSL 2 の Ubuntu に Docker Engine を直接導入済みの場合は、Ubuntu のホーム配下に ZIP を展開できます。
+Bash で `compose.yaml` のあるフォルダーに移動し、同じ `docker compose` コマンドを実行します。
+
 ## 1. 起動する
 
 ```powershell
@@ -31,9 +34,10 @@ Kuma の画面に `localhost` や `127.0.0.1` を監視先として入力する�
 
 ## 2. 監視して故障を入れる
 
-Kuma で HTTP(s) モニターを追加し、最初は `http://demo:18080/health` を設定します。
-次に `/items/1` 用の HTTP(s) モニターを追加します。名前、間隔、再試行、タイムアウト、
-本文の検証条件は、教材の各章の指定に合わせて変更します。
+Kuma で HTTP(s) モニターを追加し、`http://demo:18080/health` を設定します。
+次に、URL を `http://demo:18080/items/1`、キーワードを `monitoring-demo` とする
+HTTP(s) - Keyword モニターを追加します。名前、間隔、再試行、タイムアウトは、
+教材の各章の指定に合わせます。
 
 ```powershell
 docker compose stop demo
@@ -69,7 +73,7 @@ SQLite はファイル型 DB です。この実験は、独立した DB サー�
 
 ```powershell
 docker compose --profile notifications up -d notification-sink
-docker compose logs --tail 20 notification-sink
+docker compose --profile notifications logs --tail 20 notification-sink
 ```
 
 Kuma の通知設定で種類 `Webhook`、送信先 `http://notification-sink:18081/`、
@@ -77,8 +81,7 @@ Kuma の通知設定で種類 `Webhook`、送信先 `http://notification-sink:18
 通知名は `local-lab` などの学習用の名前にします。テスト送信を実行して保存し、
 対象モニターにその通知を割り当てて保存します。
 
-`docker compose logs --tail 20 notification-sink` に `notification_received` と受信時刻が
-出たことを確認します。テスト送信の成功だけで、故障通知まで届いたとは判断しません。
+上の `logs` コマンドをもう一度実行し、`notification_received` と受信時刻が出たことを確認します。
 次に `docker compose stop demo` で DOWN、`docker compose start demo` で UP を発生させ、
 それぞれの通知を受信ログで確認します。受信コンテナはアプリ停止中も動き続けます。
 
@@ -99,7 +102,12 @@ docker compose stop demo kuma
 docker compose start demo kuma
 ```
 
-通知の受信コンテナも停止・再開したい場合は、同様に `notification-sink` を指定します。
+通知の受信コンテナも一時停止する場合は、次の1行目を実行します。再開時は2行目を実行します。
+
+```powershell
+docker compose --profile notifications stop notification-sink
+docker compose --profile notifications start notification-sink
+```
 
 コンテナを削除してもデータを残す場合は、次を使います。
 

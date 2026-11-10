@@ -44,10 +44,15 @@ Down を確認してから受信器のログを見ます。続いて復旧させ
 
 ```powershell
 docker compose start demo
+```
+
+`demo-health` が Up に戻るまで待ち、受信器のログをもう一度表示して、復旧通知が届いたことを確かめます。
+
+```powershell
 docker compose --profile notifications logs --tail 20 notification-sink
 ```
 
-次の成功確認の後に Up の通知も受信することを確かめます。
+受信ログでは、`monitor_name` が `demo-health` の行を見ます。`heartbeat_status` の `0` が Down、`1` が Up です。
 
 ## 小さな追加: 連続する失敗だけを知らせる
 

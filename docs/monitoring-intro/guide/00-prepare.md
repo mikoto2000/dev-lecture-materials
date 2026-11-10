@@ -7,15 +7,20 @@
 ```powershell
 docker version
 docker compose version
+docker compose stats --help
 ```
 
-Docker の Client と Server の両方が表示されること、Compose V2 が使えることを確認します。`docker` コマンドはあっても Server に接続できなければ、まだ実験を始められません。
+Docker の Client と Server の両方が表示されることを確認します。教材は `docker compose` で実行する Compose v2 と v5 に対応します。8章で使う `docker compose stats` のヘルプも表示できることを確認してください。[Docker Compose のバージョン](https://docs.docker.com/compose/intro/history/)
 
-本編では Ubuntu の Bash へ移りません。以前の自作 Python 監視を試したい方は、環境を分けた[補足](../appendix-custom-checker.md)を参照してください。
+### WSL 2 に Docker Engine を直接導入済みの場合
+
+Ubuntu の Bash で `docker version` と `docker compose version` が動く場合は、その Bash で本編を進められます。ZIP を Ubuntu のホーム配下に展開し、`cd` で `compose.yaml` のあるフォルダーへ移動します。`Get-ChildItem` は `ls`、`Get-Date -Format o` は `date --iso-8601=seconds` に読み替えます。`docker compose` の操作と、Windows のブラウザーで開く URL は共通です。
+
+自作の Python 監視を試す場合は、環境を分けた[補足](../appendix-custom-checker.md)を参照してください。
 
 ## 配布ファイルを置く
 
-[教材トップ](../index.md)から ZIP をダウンロードし、エクスプローラーで展開します。`compose.yaml` と `Dockerfile` がある `monitoring-lab` フォルダーを PowerShell で開きます。例としてダウンロードフォルダーへ展開した場合は、次のようになります。実際の展開先に読み替えてください。
+[教材トップ](../index.md)から ZIP をダウンロードします。PowerShell を使う場合は、エクスプローラーで展開し、`compose.yaml` と `Dockerfile` があるフォルダーを開きます。次はダウンロードフォルダーへ展開した例です。実際の展開先に読み替えてください。
 
 ```powershell
 Set-Location "$HOME\Downloads\monitoring-lab"

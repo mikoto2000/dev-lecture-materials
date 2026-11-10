@@ -50,13 +50,13 @@ Kuma には Prometheus 向けのメトリクス出力があります。ただし
 docker compose --profile notifications stop
 ```
 
-再開する場合は次を実行します。
+Kuma とアプリを再開する場合は次を実行します。
 
 ```powershell
-docker compose --profile notifications start
+docker compose start demo kuma
 ```
 
-起動済みのサービスだけが再開します。通知受信器をまだ作っていなければ、その章の `up -d` を使います。故障設定は残るため、個別の解除コマンドで戻してください。
+通知受信器も使う場合は、`docker compose --profile notifications up -d notification-sink` で起動します。故障設定は残るため、個別の解除コマンドで戻してください。
 
 コンテナーとネットワークを片付け、**Kuma の設定・履歴と学習用データを残す**場合は、次を実行します。
 

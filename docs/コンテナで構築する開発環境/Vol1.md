@@ -8,7 +8,14 @@ date: 2026/1/9
 
 ## 前提条件
 
-- Vol.0 開発環境構築 を完了していること
+- [Vol.0 開発環境構築](./Vol0.md)を完了していること
+
+以降のコマンドは、WSL 2 の Ubuntu 24.04 のシェルで実行します。ホームディレクトリー配下に教材専用の作業場所を作り、移動してください。すでに同じ名前のディレクトリーがある場合は、別の名前を使います。
+
+```sh
+mkdir -p ~/docker-handson/site
+cd ~/docker-handson
+```
 
 
 ## Docker コンテナ概要
@@ -31,7 +38,7 @@ Docker イメージ自体は、 Dockerfile というファイルから生成さ�
 
 ### Dockerfile とは
 
-「Dockerfile = コンテナの構築手順書」と考えてください。
+「Dockerfile = イメージの構築手順書」と考えてください。
 プログラムでいうところのソースコードです。どのようにアプリケーション実行環境を構築するかを記述します。
 
 
@@ -47,7 +54,7 @@ Docker イメージ自体は、 Dockerfile というファイルから生成さ�
 ### Apache HTTP Server コンテナの起動
 
 ```sh
-docker run httpd:2.4
+docker run --rm httpd:2.4
 ```
 
 次のような実行結果が表示されます。これで Apache HTTP Server コンテナが起動します。
@@ -59,7 +66,7 @@ AH00558: httpd: Could not reliably determine the server's fully qualified domain
 [Fri Jan 09 10:39:26.403951 2026] [core:notice] [pid 1:tid 1] AH00094: Command line: 'httpd -D FOREGROUND'
 ```
 
-ただし、コンテナ環境は隔離された状態なので、ホスト OS からはアクセスできません。
+この起動方法ではホストのポートをコンテナへ割り当てていないため、Windows のブラウザーから `http://127.0.0.1:8080` でこの Apache には接続できません。
 いったん Ctrl + C でコンテナを停止しましょう。
 
 
@@ -69,13 +76,12 @@ AH00558: httpd: Could not reliably determine the server's fully qualified domain
 ポートフォワーディングを設定すると、ホスト OS の特定のポートへのアクセスをコンテナ内の特定のポートに転送できます。
 
 ```sh
-docker run -p 8080:80 httpd:2.4
+docker run --rm -p 127.0.0.1:8080:80 httpd:2.4
 ```
 
-- `-p 8080:80`: ホスト OS のポート 8080 をコンテナ内のポート 80 に転送する設定
+`-p 127.0.0.1:8080:80` は、Docker ホストである Ubuntu のループバックアドレスの 8080 番ポートを、コンテナ内の 80 番ポートへ転送する指定です。通常の WSL 2 の設定では、Windows からもループバックアドレスで接続できます。[WSL のネットワーク設定](https://learn.microsoft.com/ja-jp/windows/wsl/networking)
 
-このように、ポートフォワーディングを設定すると、ホストのポート 8080 から コンテナのポート 80(Apache HTTP Server) へアクセスできるようになります。
-Web ブラウザで `http://localhost:8080` にアクセスしてみましょう。
+Windows のブラウザーで `http://127.0.0.1:8080` にアクセスしてみましょう。
 `It works!` と表示されたら成功です。
 
 ![ポートフォワーディング](./images/vol1/port-forwarding.png)
@@ -83,28 +89,13 @@ Web ブラウザで `http://localhost:8080` にアクセスしてみましょう
 
 ### バインドマウントでコンテンツを変更できるようにする
 
-ポートフォワーディングでコンテナへアクセスできるようになりましたが、
-このままではコンテナへ手元の資材を持ち込めません。
-それでは開発環境として不便ですので、バインドマウントという仕組みを使い、
-手元の資材をコンテナへ持ち込めるようにしましょう。
+バインドマウントを使うと、Ubuntu 上のファイルをコンテナ内の指定した場所から参照できます。この例では、公開する HTML を置く `site` ディレクトリーだけをマウントします。
 
 前のコンテナが動いたままなら、そのターミナルで Ctrl + C を押して停止します。同じポート 8080 は同時に使えないためです。
 
-```sh
-docker run -p 8080:80 -v "$(pwd):/usr/local/apache2/htdocs" httpd:latest
-```
-
-- `$(pwd)`: カレントディレクトリの絶対パスに展開される
-- `-v "$(pwd):/usr/local/apache2/htdocs"`: カレントディレクトリをコンテナ内の `/usr/local/apache2/htdocs` ディレクトリにマウントする設定
-
-コンテナを起動したら、再度 Web ブラウザで `http://localhost:8080` にアクセスしてみましょう。
-`It works!` の代わりに、カレントディレクトリのファイル一覧が表示されます。
-これでカレントディレクトリをコンテナ上の Apache HTTP Server が参照していることが確認できました。
-
 ![バインドマウント](./images/vol1/bind-mount.png)
 
-せっかくなのでファイルを作成し、 Apache HTTP Server から参照できることを確認してみましょう。
-カレントディレクトリに `index.html` ファイルを作成し、次の内容を記述します。
+作業ディレクトリーの `site/index.html` に、次の内容を記述します。
 
 ```html
 <!DOCTYPE html>
@@ -119,8 +110,15 @@ docker run -p 8080:80 -v "$(pwd):/usr/local/apache2/htdocs" httpd:latest
 </html>
 ```
 
-ファイルが作成出来たら、再度 Web ブラウザで `http://localhost:8080` にアクセスしてみましょう。
-`It's my created file!` と表示されます。
+作業ディレクトリーで次のコマンドを実行します。
+
+```sh
+docker run --rm -p 127.0.0.1:8080:80 -v "$(pwd)/site:/usr/local/apache2/htdocs:ro" httpd:2.4
+```
+
+`$(pwd)` は現在の作業ディレクトリーの絶対パスに展開されます。`-v` は `site` を Apache のドキュメントルートにマウントする指定です。末尾の `:ro` により、コンテナからの書き込みはできません。
+
+`http://127.0.0.1:8080` を開き、`It's my created file!` が表示されることを確認します。Ubuntu 側で `site/index.html` を編集してブラウザーを再読み込みすると、コンテナを作り直さずに変更が反映されます。確認後は、次の手順でも同じファイルを使うため、内容を元に戻してください。
 
 
 ### カスタム Docker イメージの作成
@@ -145,7 +143,7 @@ RUN apt update \
 # apache HTTP Server の起動に必要なディレクトリを作成
 RUN mkdir -p /var/run/apache2 /var/lock/apache2
 
-# ポート 80 を公開
+# コンテナが使用するポートを明示する
 EXPOSE 80
 
 # Apache HTTP Server をフォアグラウンドで起動
@@ -167,7 +165,7 @@ docker build -t my-httpd:latest .
 - `-t my-httpd:latest`: ビルドするイメージに `my-httpd:latest` という名前を付ける
 - `.`: カレントディレクトリにある `Dockerfile` を使用
 
-次に、 docker images コマンドで、ビルドしたイメージが作成されていることを確認します。
+次に、`docker images` コマンドで、ビルドしたイメージが作成されていることを確認します。
 次のように `my-httpd:latest` イメージが表示されれば成功です。
 
 ```sh
@@ -185,14 +183,12 @@ my-httpd:latest                                                                 
 次のコマンドを実行します。
 
 ```sh
-docker run -p 8080:80 -v "$(pwd):/var/www/html" my-httpd:latest
+docker run --rm -p 127.0.0.1:8080:80 -v "$(pwd)/site:/var/www/html:ro" my-httpd:latest
 ```
 
-- `-v "$(pwd):/var/www/html"`: カレントディレクトリをコンテナ内の `/var/www/html` にマウントする設定
+`/var/www/html` は Ubuntu の `apache2` パッケージの既定のドキュメントルートです。先ほどと同じ `site` を読み取り専用でマウントします。
 
-`/var/www/html` は Ubuntu ベースの Apache HTTP Server の既定のドキュメントルートです。
-
-再度 Web ブラウザで `http://localhost:8080` にアクセスしてみましょう。
+再度 Web ブラウザで `http://127.0.0.1:8080` にアクセスしてみましょう。
 `It's my created file!` と表示されれば成功です。
 
 これで、カスタム Docker イメージの作成と起動ができました。
@@ -200,8 +196,7 @@ docker run -p 8080:80 -v "$(pwd):/var/www/html" my-httpd:latest
 
 ## Docker Compose を使ってみる
 
-Docker Compose は、複数の Docker コンテナをまとめて管理するためのツールです。
-ひとつひとつのコンテナを、「サービス」として定義し、複数のサービスをまとめて「アプリケーション」として定義します。
+Docker Compose は、複数のサービスで構成されるアプリケーションを定義し、関連するコンテナをまとめて管理するツールです。この演習では、サービスごとにコンテナを1つ起動します。
 
 本ワークショップでは、 Dev container を使った開発環境構築を見越して、「開発環境」と「Web サーバー環境」のふたつのサービスを定義してみましょう。
 
@@ -224,17 +219,17 @@ services:
   # curl がインストールされた開発環境コンテナ
   app:
     image: curlimages/curl:8.18.0
-    # このイメージは既定で curl を実行して終了するため、常駐させる
-    command: sleep infinity
+    # 起動コマンドを指定し、接続して作業できるように常駐させる
+    entrypoint: ["sleep", "infinity"]
 
   web:
     image: httpd:2.4
     # ポートフォワーディング設定
     ports:
-      - "8080:80"
+      - "127.0.0.1:8080:80"
     # バインドマウント設定
     volumes:
-      - ./:/usr/local/apache2/htdocs
+      - ./site:/usr/local/apache2/htdocs:ro
 ```
 
 ![compose](./images/vol1/compose.png)
@@ -242,20 +237,18 @@ services:
 ### Docker Compose の起動
 
 次に、 Docker Compose を起動します。
-カレントディレクトリで、次のコマンドを実行します。
+前の節で起動したコンテナを Ctrl + C で停止し、ポート 8080 を空けます。続いて、`compose.yaml` のある作業ディレクトリーで次のコマンドを実行します。
 
 ```sh
 docker compose up -d
 ```
-
-前の節で起動したコンテナが残っていると、ポート 8080 の衝突で失敗します。その場合は先に停止してください。
 
 ### サービスの動作確認
 
 #### web サービスの動作確認
 
 web サービスが動いているかを確認します。
-Web ブラウザで `http://localhost:8080` にアクセスしてみましょう。
+Web ブラウザで `http://127.0.0.1:8080` にアクセスしてみましょう。
 
 `It's my created file!` と表示されれば成功です。
 
@@ -279,7 +272,7 @@ curl http://web:80
 
 `It's my created file!` と表示されれば成功です。
 
-`http://web` の `web` は、compose.yaml で定義したサービス名です。Docker Compose では、サービス名がそのままホスト名として名前解決されます。
+`http://web` の `web` は、`compose.yaml` で定義したサービス名です。同じ Compose ネットワークに接続しているコンテナは、サービス名で互いに接続できます。
 
 
 app サービスと web サービスのふたつのサービスを定義し、動作確認まで行いました。
@@ -287,8 +280,7 @@ app サービスと web サービスのふたつのサービスを定義し、�
 
 #### Docker Compose の停止
 
-サービスの動作確認ができたら、 Docker Compose を停止します。
-カレントディレクトリで、次のコマンドを実行します。
+動作確認ができたら、`exit` で app コンテナのシェルを抜けます。Ubuntu のシェルに戻り、`compose.yaml` のある作業ディレクトリーで次のコマンドを実行します。
 
 ```sh
 docker compose down
@@ -306,4 +298,5 @@ docker compose down
 - [ubuntu - Official Image | Docker Hub](https://hub.docker.com/_/ubuntu)
 - [docker | Docker Docs](https://docs.docker.com/reference/cli/docker/)
 - [docker compose | Docker Docs](https://docs.docker.com/reference/cli/docker/compose/)
+- [ポート公開 | Docker Docs](https://docs.docker.com/engine/network/port-publishing/)
 

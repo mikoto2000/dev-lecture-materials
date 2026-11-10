@@ -8,8 +8,8 @@ date: 2026/1/13
 
 ## 前提条件
 
-- Vol.0 開発環境構築 を完了していること
-- Vol.1 Docker/Docker Compose 入門 相当の知識を有していること
+- [Vol.0 開発環境構築](./Vol0.md)を完了していること
+- [Vol.1 Docker/Docker Compose 入門](./Vol1.md)相当の知識を有していること
   - （基本的な Docker/Docker Compose の使い方がわかれば OK）
 - VS Code に **Dev Containers** 拡張機能をインストールしていること
   - WSL 上のフォルダーを開くため、**WSL** 拡張機能も必要である
@@ -19,11 +19,9 @@ date: 2026/1/13
 
 この章では、 Dev container を使い始める前に概要を説明します。
 
-Dev container とは、誤解を恐れず言うと、
-「docker や docker compose コマンドで立ち上げたコンテナに、 VS Code を転送して作業するための仕組み」
-です。
+Dev Container は、コンテナを開発環境として使うための仕組みです。この教材では、VS Code の Dev Containers 拡張機能が Docker Compose で開発環境を起動し、開発用コンテナに接続します。
 
-ファイル編集やコマンド実行はコンテナ上に転送した VS Code で行い、その結果を見る UI だけがホスト OS 上で動きます。
+VS Code の画面は Windows 側で動き、コンテナ内の VS Code Server がワークスペースへのアクセスやターミナルの実行を受け持ちます。開発ツールとワークスペース用の拡張機能もコンテナ内で動きます。[VS Code の Dev Containers ガイド](https://code.visualstudio.com/docs/devcontainers/containers)
 
 Dev container では `devcontainer.json` という設定ファイルを使い、
 コンテナ上の開発環境設定をコードとして管理します。
@@ -75,7 +73,7 @@ services:
   # AP サーバー兼開発コンテナ定義
   app:
     # Microsoft が提供している Dev container 向けの Java イメージ
-    image: mcr.microsoft.com/devcontainers/java:21
+    image: mcr.microsoft.com/devcontainers/java:3-21-trixie
     init: true
     # 環境変数定義
     # 次では PostgreSQL への接続情報を設定している
@@ -106,7 +104,7 @@ services:
       # 下段の「volumes」で定義したボリュームに PostgreSQL のデータを格納するように設定
       - pgdata:/var/lib/postgresql
 
-# コンテナの再起動をしてもデータが残るように、ボリュームを定義
+# コンテナを作り直してもデータが残るように、ボリュームを定義
 volumes:
   pgdata:
 ```
@@ -118,7 +116,7 @@ volumes:
 次に、主に「VS Code でどのコンテナに接続し、どんな拡張機能を使うか」を定義していきます。
 `.devcontainer/devcontainer.json` に、次の内容を記述してください。
 
-```json
+```jsonc
 {
   "name": "Java Dev Container",
 
@@ -162,11 +160,8 @@ VS Code が表示され、左下に `WSL: Ubuntu-24.04` と表示されます。
 
 ## Dev container 開発環境の起動
 
-1. Ctrl+Shift+P -> `Open Folder in Container` と入力
-2. 候補に表示される `Dev Containers: Open Folder in Container...` を選択
-3. 作成した作業ディレクトリが表示されるので、そのまま Enter を押下
-
-すでに VS Code でそのフォルダーを開いている場合は、同じメニューの `Dev Containers: Reopen in Container` でも起動できます。
+1. Ctrl+Shift+P でコマンドパレットを開く
+2. `Dev Containers: Reopen in Container` を選択する
 
 VS Code のウィンドウがリロードされ、左下に `Dev Container: Java Dev Container` と表示されます。
 
@@ -189,17 +184,21 @@ sudo apt update
 sudo apt install -y postgresql-client
 ```
 
+旧版の `mcr.microsoft.com/devcontainers/java:21` イメージでは、Yarn リポジトリーの署名エラーにより `apt update` が失敗しました。同じエラーが出たら、`compose.yaml` の `app` を上記のイメージ指定に更新し、`Dev Containers: Rebuild Container` を実行します。[Java Dev Container イメージ](https://github.com/devcontainers/images/blob/main/src/java/README.md)
+
+ここで追加したパッケージは、開発コンテナを作り直すと失われます。チーム全員の環境に含めるには、Dockerfile などの構成にインストール手順を記述します。
+
 ### PostgreSQL コンテナへの接続
 
 app コンテナには環境変数が設定されていますので、活用しましょう。
 
 ```sh
-PGPASSWORD=${MAIN_DB_PASSWORD} psql -U ${MAIN_DB_USER} -h ${MAIN_DB_HOSTNAME} -d ${MAIN_DB_NAME}
+PGPASSWORD="$MAIN_DB_PASSWORD" psql -U "$MAIN_DB_USER" -h "$MAIN_DB_HOSTNAME" -d "$MAIN_DB_NAME"
 ```
 
-DB に接続できたら OK です。
+`appdb=#` が表示されたら接続成功です。`\conninfo` で接続先を確認し、`\q` でシェルに戻ります。接続を拒否された場合は、PostgreSQL の初期化を数秒待ってから再試行してください。
 
-後は、 Spring Initializr などで Spring Boot プロジェクトを作成し、 `.devcontainer` と同じディレクトリに格納します。これで Spring Boot + PostgreSQL のプロジェクトの開発ができます。
+この構成で Spring Boot の開発を始めるときは、プロジェクトを `.devcontainer` のある作業ディレクトリーに置きます。`MAIN_DB_*` は教材で定義した環境変数なので、Spring Boot から使うにはデータソース設定で明示的に参照します。
 
 
 ## 開発環境の共有方法
