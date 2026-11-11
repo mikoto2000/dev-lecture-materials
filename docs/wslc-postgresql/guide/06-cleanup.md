@@ -4,9 +4,11 @@
 
 開発を続けるか、学習データを完全に捨てるかを選びます。以下を全部実行する必要はありません。
 
+psql を開いている場合は `\q` で PowerShell に戻ります。準備でコンテナー名やボリューム名を変えた場合は、自分が作った学習用リソースの名前を使ってください。
+
 ## A. また使う場合（おすすめ）
 
-psql を `\q` で終了し、DB を止めます。
+DB を止めます。
 
 ```powershell
 wslc container stop wslc-workshop-db
@@ -23,7 +25,7 @@ wslc container stop wslc-workshop-db
 wslc container remove wslc-workshop-db
 ```
 
-データは残り、同じボリュームを使って再作成できます。既に停止・削除済みなら、その操作は飛ばします。
+データは残ります。次回は [4章](./04-persist.md)の「コンテナーだけ作り直す」で、`volume inspect` から進めます。既に停止・削除済みなら、その操作は飛ばします。
 
 ## C. 学習データを完全に捨てる場合
 

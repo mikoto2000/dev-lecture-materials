@@ -13,7 +13,7 @@ function walk(directory) {
   }
 }
 walk(root);
-assert.equal(files.length, 11, 'Expected ten workshop pages and a verification record');
+assert.equal(files.length, 10, 'Expected ten workshop pages');
 for (const file of files) {
   const text = readFileSync(file, 'utf8');
   assert.equal((text.match(/^```/gm) || []).length % 2, 0, `${file}: unclosed fence`);

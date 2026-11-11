@@ -20,8 +20,10 @@ docker compose ps
 ```
 
 ブラウザーで http://127.0.0.1:13001 を開きます。Uptime Kuma は `2.5.5` に固定しています。
-初回はローカルの SQLite と管理者アカウントを設定します。この実験用に作ったパスワードを使い、
-実在する外部サービスのパスワードを流用しないでください。画面が開かない場合は数十秒待ち、
+初回はデータベース選択画面で **SQLite** を選び、**Next** を押します。管理者を作成する画面で
+**Username** と **Password** を入力し、**Repeat Password** に同じパスワードを入力します。
+**Create** を押し、ダッシュボードに **Add New Monitor** が表示されたら初期設定は完了です。
+実験用に新しいパスワードを作ってください。画面が開かない場合は数十秒待ち、
 `docker compose logs --tail 30 kuma` で起動状況を確認します。
 
 - ブラウザーからの Kuma：`http://127.0.0.1:13001`
@@ -53,7 +55,7 @@ docker compose exec demo python labctl.py inspect
 docker compose logs --tail 20 demo
 ```
 
-一行ずつ実行し、故障中と解除後を観察します。すべてを一括実行すると変化を見逃します。
+一行ずつ実行します。故障を起こしたら次の監視結果が出るまで待ち、解除後も Up に戻ったことを確認します。遅延の実験では `demo-item` の Request Timeout を 3 秒にすると 2 秒の遅延でもグラフを観察できます。続いて 1 秒に変更するとタイムアウトを確認できます。
 
 - `stop demo`：アプリを停止する。Kuma は起動したまま。
 - `db-unavailable on`：専用 SQLite ファイルを一時退避する。`/health` は 200 のまま、
@@ -82,8 +84,8 @@ Kuma の通知設定で種類 `Webhook`、送信先 `http://notification-sink:18
 対象モニターにその通知を割り当てて保存します。
 
 上の `logs` コマンドをもう一度実行し、`notification_received` と受信時刻が出たことを確認します。
-次に `docker compose stop demo` で DOWN、`docker compose start demo` で UP を発生させ、
-それぞれの通知を受信ログで確認します。受信コンテナはアプリ停止中も動き続けます。
+次に `docker compose stop demo` を実行し、Down が表示されて受信ログに通知が出るまで待ちます。
+続けて `docker compose start demo` を実行し、Up の表示と復旧通知を確認します。受信コンテナはアプリ停止中も動き続けます。
 
 受信先は Compose の内部ネットワークだけで使い、ホストにはポートを公開しません。
 受信本文は最大 8 KiB、本文読み取りは最大 3 秒で、ログは限られたフィールドだけです。
@@ -133,6 +135,8 @@ docker compose up -d demo
 
 `reset` は専用 DB、既知の故障設定、アプリのログを作り直します。
 稼働中に `docker compose exec demo python labctl.py reset` を実行しないでください。
+出力の `app and monitors` は、同じ `.state` を使うアプリと付録の自作監視を指します。
+別のボリュームを使う Kuma は起動したまま初期化できます。
 
 ### 明示的な全消去：やり直すと決めた場合だけ
 
@@ -146,9 +150,9 @@ docker compose --profile notifications down --volumes
 ## 安全に片付けるための注意
 
 - プロジェクト名は `monitoring-intro-lab` である。他の教材のコンテナやボリュームは操作しない。
-- 同じ PC を複数人・複数コピーで同時に使う場合は、たとえば `docker compose -p monitoring-pair2`
-  をすべての操作で一貫して使う。`compose.yaml` のホスト側ポート 13001 と 18080 も、
-  空いている別番号へ変更する。コンテナ側のポートと Kuma の監視 URL は変更しない。
+- 同じ Docker Engine で複数のラボを使う場合は、コピーごとに `compose.yaml` の `name` を
+  `monitoring-pair2` などの未使用の名前へ変更する。ホスト側ポート 13001 と 18080 も空いている番号へ変更し、
+  Windows のブラウザーでは変更後の番号を使う。Kuma の監視 URL には引き続きコンテナ側のポートを使う。
 - ポートが競合した場合は、何が使っているか確認する。知らないプロセスは停止しない。
 - Docker 全体を対象にした削除コマンドや、一括クリーンアップは使わない。
 - `requests.jsonl` はアプリの実験ログである。実験中に増えるため、不要になったら上の停止・reset

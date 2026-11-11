@@ -27,8 +27,6 @@ Docker Desktop の場合、`df` やコンテナー統計は Linux コンテナ�
 - ローカル Webhook の Test と、実際の Down / Up を確認できる
 - 各故障の解除、設定保持、データを消す後片付けを区別できる
 
-[検証記録](./verification.md)に、作成環境での確認と未実施の範囲を分けて記載します。Windows 実機や受講者のネットワーク環境まで一律に検証済みとは扱いません。
-
 ## 安全上の約束
 
 本編は PowerShell で示します。WSL の Docker Engine を使う場合の読み替えは[準備](./guide/00-prepare.md)に記載しています。Docker 内部の `demo` という名前と、Windows のブラウザーで使う `127.0.0.1` を区別します。

@@ -1,6 +1,4 @@
-# 参考資料と検証範囲
-
-確認日: 2026-10-08。
+# 参考資料
 
 ## 公式資料
 
@@ -18,12 +16,8 @@
 - [PostgreSQL: pg_isready](https://www.postgresql.org/docs/17/app-pg-isready.html)
 - [Rspress: Quick start](https://rspress.rs/guide/start/getting-started)
 
-公式イメージの説明にある Docker コマンドをそのまま wslc に置き換えたわけではありません。wslc 側の引数は Microsoft の実装・テストと照合しています。ただし master ブランチは変わるため、手元の版の `--help` と実機確認を優先してください。
+手元の wslc で使える引数は `--help` で確認してください。
 
 ## 構成の参考
 
 [mikoto2000 / Practical-Introduction-to-Spring-Boot](https://github.com/mikoto2000/Practical-Introduction-to-Spring-Boot) の Rspress 2.0.1、左サイドバー、日本語ハンズオン、講義の区切りを参考にしています。本教材は独立したコンテンツとして、この教材集に収録しています。
-
-## 検証の境界
-
-[検証記録](./verification.md) に、教材ビルド・静的チェックと、Windows 上での wslc による実機確認の結果を記録しています。開催前には講師用チェックリストを実行してください。

@@ -6,7 +6,7 @@
 
 ## 小さな追加: 保存先を指定して読む
 
-前章の故障を戻し、`demo-health` と `demo-item` が Up であることを確認します。以降も、教材の `compose.yaml` があるフォルダーの PowerShell で操作します。
+前章の故障を戻し、`demo-health` と `demo-item` が Up であることを確認します。以降も、教材の `compose.yaml` があるフォルダーで操作します。WSL 2 上の Docker Engine を使う場合は、[準備の読み替え手順](./00-prepare.md)に沿って Bash で実行します。
 
 実験アプリの DB とログは、`demo` 内の `/lab/.state` にあります。この場所を指定して読みます。
 

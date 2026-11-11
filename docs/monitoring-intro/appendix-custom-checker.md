@@ -6,7 +6,7 @@
 
 ## 本編と環境を混ぜない
 
-この補足では WSL 2 / Ubuntu の Bash と Python 3.10 以降を使います。本編で使ったシェルから本編の `compose.yaml` があるフォルダーに移動し、Compose を停止します。補足用の ZIP は別のフォルダーへ展開してください。どちらも既定で 18080 番を使います。
+この補足では WSL 2 / Ubuntu の Bash と Python 3.10 以降を使います。本編で使ったシェルから本編の `compose.yaml` があるフォルダーに移動し、Compose を停止します。本編と補足はどちらも既定で 18080 番を使います。
 
 本編に Windows の PowerShell を使った場合は、次のコマンドで停止してから Ubuntu に移ります。本編に Ubuntu の Bash を使った場合は、1行目だけを Bash で実行します。
 
@@ -16,7 +16,7 @@ wsl --list --verbose
 wsl -d Ubuntu-24.04
 ```
 
-Ubuntu の名前は自分の環境に合わせます。以後は **Ubuntu の Bash** です。配布ファイルを Ubuntu のホーム配下へコピーし、そのフォルダーに移動します。
+Ubuntu の名前は自分の環境に合わせます。以後は **Ubuntu の Bash** です。本編と同じ配布 ZIP を Ubuntu のホーム配下の別フォルダーへ展開し、`app.py` がある場所に移動します。
 
 ```bash
 python3 --version

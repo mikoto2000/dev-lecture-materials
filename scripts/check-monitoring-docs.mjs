@@ -14,7 +14,7 @@ function walk(directory) {
   }
 }
 walk(root);
-assert.equal(pages.length, 18, 'Expected original course, three resource chapters and appendix');
+assert.equal(pages.length, 17, 'Expected 17 monitoring workshop pages');
 for (const file of pages) {
   const text = readFileSync(file, 'utf8');
   assert.equal((text.match(/^```/gm) || []).length % 2, 0, `${file}: unclosed fence`);

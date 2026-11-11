@@ -48,11 +48,11 @@ npm run preview
 
 `npm run textlint` は `docs` 配下の Markdown 全体を対象に実行でき、現在は指摘 0 件です。文体の修正は教材の再構成と分けて扱います。
 
-## wslc 教材の配布資料と実機確認
+## wslc 教材の配布資料
 
 SQL と PowerShell の例は `docs/public/wslc-postgresql/examples/` に格納し、教材トップからダウンロードできます。教材を読む受講者に Node.js は不要です。
 
-Windows 上の wslc で PostgreSQL の起動、SQL、永続化、後片付けを確認しました。検証したバージョンと操作範囲は[検証記録](docs/wslc-postgresql/verification.md)を参照してください。開催前は[講師用ガイド](docs/wslc-postgresql/facilitator.md)に沿って受講環境で確認してください。
+開催前は、講師用ガイドに沿って受講環境で確認してください。[講師用ガイド](docs/wslc-postgresql/facilitator.md)
 
 ## インフラ監視教材の実験用ファイル
 
@@ -60,4 +60,4 @@ Windows 上の wslc で PostgreSQL の起動、SQL、永続化、後片付けを
 
 自作の `monitor.py` / `watchdog.py` は任意の補足です。本編の監視には使用しません。
 
-`npm run test:monitoring` は Python 3.10 以降が必要です。`check:monitoring-compose` は Docker CLI と Compose（v2 または v5）、`test:monitoring-compose` は Docker の実行環境も必要です。後者は試験専用のプロジェクトとボリュームを作成し、終了時に削除します。自動試験と Windows / WSL での実機確認の範囲は、[検証記録](docs/monitoring-intro/verification.md)を参照してください。
+`npm run test:monitoring` は Python 3.10 以降が必要です。`check:monitoring-compose` は Docker CLI と Compose（v2 または v5）、`test:monitoring-compose` は Docker の実行環境も必要です。後者は試験専用のプロジェクトとボリュームを作成し、終了時に削除します。

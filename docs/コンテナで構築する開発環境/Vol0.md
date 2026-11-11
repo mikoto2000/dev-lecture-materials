@@ -120,6 +120,8 @@ Windows の PowerShell で `wsl.exe -l -v` を実行し、`Ubuntu-24.04` の `VE
 
 Ubuntu 24.04 の起動後、[Ubuntu | Docker Docs](https://docs.docker.com/engine/install/ubuntu/) の手順に従って、Docker をインストールします。
 
+以降のコマンドは Ubuntu のシェルで実行します。このシリーズでは Ubuntu 内の Docker Engine を使います。事前に `ps -p 1 -o comm=` を実行し、`systemd` が表示されることを確認します。別の名前が表示された場合は、[WSL で systemd を有効にする手順](https://learn.microsoft.com/ja-jp/windows/wsl/systemd)を参照してください。
+
 ### apt リポジトリの登録
 
 Docker インストールに必要な apt リポジトリを Ubuntu に登録します。
@@ -163,6 +165,8 @@ sudo gpasswd -a "$(id -un)" docker
 
 `newgrp docker` を実行して、現在のシェルでグループの変更を反映します。`id -nG` の出力に `docker` が含まれることを確認してください。
 
+VS Code など、グループ追加前から Ubuntu 内で動いているプロセスにも変更を反映するには、Ubuntu を再起動します。作業を保存してから、Windows の PowerShell で `wsl.exe --terminate Ubuntu-24.04` を実行します。このコマンドで対象の Ubuntu 内のプロセスがすべて停止します。その後、Ubuntu を開き直してください。
+
 
 ### Docker の動作確認
 
@@ -197,6 +201,8 @@ For more examples and ideas, visit:
 ```
 
 以上で、Docker のインストールと動作確認は完了です。お疲れさまでした。
+
+`docker compose version` で Compose のバージョンも表示されることを確認し、[Vol.1](./Vol1.md) に進みます。
 
 
 ## 参考資料

@@ -6,7 +6,7 @@
 
 ## 小さな追加: 正常時と比べる
 
-`demo-item` の詳細画面で、**Response** / **Avg. Response** と応答時間のグラフを確認します。最初に正常時の値を数回観察します。
+`demo-item` の詳細画面で、直近の **Response (Current)** と **Avg. Response (24 hours)** を確認します。その下のグラフは **Recent** で表示し、最初に正常時の値を数回観察します。
 
 **この版の HTTP 監視に「成功していても 500 ms を超えたら警告通知」という独立したしきい値設定はありません。** グラフで遅さを読むことと、タイムアウトで失敗扱いにすることを分けます。500 ms は説明用の目安であり、全サービス共通の基準ではありません。
 
@@ -14,13 +14,13 @@
 
 **戻すコマンドは `docker compose exec demo python labctl.py delay 0` です。** CPU に負荷を掛けたり、ディスクを埋めたりしません。`/items/1` の処理にだけ、最大2秒の待ち時間を入れます。
 
-まず `demo-item` の Request Timeout を **3 秒**にして保存します。
+まず `demo-item` の **Edit** を開き、**Request Timeout** を **3 秒**にして **Save** を押します。**Retries** は **0** のままです。前章で Retries を **2** にしたのは `demo-health` です。保存後は、左の監視一覧で `demo-item` を選んで詳細画面へ戻ります。
 
 ```powershell
 docker compose exec demo python labctl.py delay 0.8
 ```
 
-数回の確認を待ちます。状態は Up のままでも、応答時間は通常時より増えます。グラフの過去の点と、新しい点を比べてください。新しい確認結果がグラフへ反映されるまで待ちましょう。
+数回の確認を待ちます。状態は Up のままでも、応答時間は通常時より増えます。グラフの過去の点と新しい点を比べます。縦軸の目盛りは測定値に応じて変わるので、単位と目盛りも確認してください。
 
 次に、待ち時間を延ばします。
 
@@ -28,7 +28,7 @@ docker compose exec demo python labctl.py delay 0.8
 docker compose exec demo python labctl.py delay 2
 ```
 
-3 秒の待機上限なら成功することを確認した後、監視の Request Timeout を **1 秒**へ変更します。次の確認で待ち切れず Down になることを見ます。
+まず Up のまま、グラフに約 2,000 ms の点が加わることを確認します。続いて **Request Timeout** を **1 秒**へ変更して保存し、詳細画面へ戻ります。次の確認で Down になると、**Response (Current)** は `N/A` になります。履歴の `timeout of 1000ms exceeded` で失敗理由を確認できます。
 
 ## 復旧
 

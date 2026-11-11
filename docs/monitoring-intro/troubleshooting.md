@@ -4,6 +4,8 @@
 
 Docker Desktop が起動しているか、Linux コンテナーになっているか確認します。PowerShell の `docker version` で Client だけでなく Server も表示される必要があります。インストール・WSL 2 バックエンドの準備は[公式手順](https://docs.docker.com/desktop/setup/install/windows-install/)を確認します。
 
+Docker Engine を直接導入した場合は、Ubuntu の Bash で `docker version` と `systemctl is-active docker` を実行します。デーモンの起動やグループ設定は [Vol.0 開発環境構築](../コンテナで構築する開発環境/Vol0.md)を参照します。
+
 ## compose.yaml が見つからない
 
 `Get-Location` と `Get-ChildItem` で、配布 ZIP の展開先を確認します。すべてのコマンドを同じ `compose.yaml` のある場所で実行します。フォルダー名だけでなく、プロジェクト名も同じものを使います。
@@ -14,7 +16,7 @@ Docker Desktop が起動しているか、Linux コンテナーになってい�
 
 ## Kuma の画面は開くが監視は Down
 
-監視 URL が `http://demo:18080/health` か確認します。Kuma 内の `localhost` は Kuma 自身です。ブラウザーから見る `127.0.0.1:18080` を、そのまま監視設定へコピーしないでください。
+監視 URL を確認します。`demo-health` は `http://demo:18080/health`、`demo-item` は `http://demo:18080/items/1` です。Kuma 内の `localhost` は Kuma 自身を指すため、監視 URL には Compose のサービス名 `demo` を使います。
 
 ```powershell
 docker compose ps
@@ -58,7 +60,12 @@ docker compose --profile notifications logs --tail 20 notification-sink
 
 ## stats コマンドが使えない
 
-`docker compose version` と `docker compose stats --help` を確認します。古い Compose では利用できないことがあります。`docker compose stats` が使えない場合は、`docker stats` でコンテナー単位の統計を確認できます。状態だけなら `docker compose ps` を使います。利用中の環境に合う公式の更新方法を確認し、知らないスクリプトを導入しないでください。対象の `demo` と `kuma` が起動していることも確認します。
+`docker compose version` と `docker compose stats --help` を確認します。古い Compose では利用できないことがあります。その場合は `docker compose ps` で `demo` と `kuma` が起動中であることを確認します。`NAME` 列のコンテナー名を `docker stats --no-stream` の引数に指定してください。以下は既定のプロジェクト名を使った場合の例です。
+
+```powershell
+docker stats --no-stream monitoring-intro-lab-demo-1
+docker stats --no-stream monitoring-intro-lab-kuma-1
+```
 
 ## df の空き容量が Windows と違う
 

@@ -65,13 +65,15 @@ docker compose exec demo python labctl.py wrong-data off
 
 ## もう少し厳密にする: JSON Query
 
-JSON の構造と値まで確かめたい場合は、追加の監視タイプ **HTTP(s) - Json Query** を使えます。URL は同じ `/items/1` です。
+JSON の構造と値まで確かめたい場合は、**Add New Monitor** から **HTTP(s) - Json Query** を選び、`demo-item-json` という名前で追加します。URL は `http://demo:18080/items/1`、間隔・再試行・タイムアウトは `demo-item` と同じです。
 
 - Json Query Expression: `id = 1 and name = "monitoring-demo"`
-- 条件: `==`
+- Condition: `==`
 - Expected Value: `true`（引用符なし）
 
 これは **JSONata** の式です。JSONPath とは書き方が違います。Kuma は式の評価結果を文字列にして Expected Value と比較します。`true` を引用符で囲むと別の文字列になり、一致しません。条件を追加したら、正常時だけでなく wrong-data の故障と復旧も同じように試します。
+
+次章以降は `demo-health` と `demo-item` を使います。比較が済んだら、`demo-item-json` の詳細画面で **Pause** を押し、確認画面の **Yes** を選ぶと一時停止できます。
 
 ## 確かめた範囲
 

@@ -33,7 +33,7 @@ Docker イメージと言われるテンプレートからコンテナを起動�
 
 「Docker イメージ = コンテナの設計図」と考えてください。
 プログラムでいうところのクラスのようなもので、イメージからコンテナを起動（インスタンス化）します。
-Docker イメージ自体は、 Dockerfile というファイルから生成されます。
+自分でイメージを作るときは、Dockerfile に構築手順を書いてビルドできます。この章では、公開済みのイメージを取得して使う方法と、自分でビルドする方法の両方を試します。
 
 
 ### Dockerfile とは
@@ -42,7 +42,10 @@ Docker イメージ自体は、 Dockerfile というファイルから生成さ�
 プログラムでいうところのソースコードです。どのようにアプリケーション実行環境を構築するかを記述します。
 
 
-![Dockerfile, Docker イメージ, docker コンテナ](./images/vol1/dockerfile-docker-image-and-container.png)
+```text
+Dockerfile ── docker build ──> イメージ
+イメージ   ── docker run   ──> コンテナ（実行するたびに新規作成）
+```
 
 
 ## Docker コンテナを使ってみる
@@ -67,7 +70,7 @@ AH00558: httpd: Could not reliably determine the server's fully qualified domain
 ```
 
 この起動方法ではホストのポートをコンテナへ割り当てていないため、Windows のブラウザーから `http://127.0.0.1:8080` でこの Apache には接続できません。
-いったん Ctrl + C でコンテナを停止しましょう。
+Apache はフォアグラウンドで動くため、このシェルにはプロンプトが戻りません。Ctrl+C で停止すると、`--rm` の指定によりコンテナも削除されます。
 
 
 ### ポートフォワーディングでアクセスできるようにする
@@ -84,7 +87,9 @@ docker run --rm -p 127.0.0.1:8080:80 httpd:2.4
 Windows のブラウザーで `http://127.0.0.1:8080` にアクセスしてみましょう。
 `It works!` と表示されたら成功です。
 
-![ポートフォワーディング](./images/vol1/port-forwarding.png)
+```text
+Windows のブラウザー → Ubuntu の 127.0.0.1:8080 → Apache コンテナの 80 番
+```
 
 
 ### バインドマウントでコンテンツを変更できるようにする
@@ -93,7 +98,9 @@ Windows のブラウザーで `http://127.0.0.1:8080` にアクセスしてみ�
 
 前のコンテナが動いたままなら、そのターミナルで Ctrl + C を押して停止します。同じポート 8080 は同時に使えないためです。
 
-![バインドマウント](./images/vol1/bind-mount.png)
+| Ubuntu 上のファイル | コンテナ内で参照するパス |
+|---|---|
+| `site/index.html` | `/usr/local/apache2/htdocs/index.html` |
 
 作業ディレクトリーの `site/index.html` に、次の内容を記述します。
 
@@ -163,7 +170,7 @@ docker build -t my-httpd:latest .
 ```
 
 - `-t my-httpd:latest`: ビルドするイメージに `my-httpd:latest` という名前を付ける
-- `.`: カレントディレクトリにある `Dockerfile` を使用
+- `.` はビルド時に参照できるファイルの範囲（ビルドコンテキスト）として、現在のディレクトリーを指定する。この例では、その直下の `Dockerfile` が使われる
 
 次に、`docker images` コマンドで、ビルドしたイメージが作成されていることを確認します。
 次のように `my-httpd:latest` イメージが表示されれば成功です。
@@ -232,7 +239,10 @@ services:
       - ./site:/usr/local/apache2/htdocs:ro
 ```
 
-![compose](./images/vol1/compose.png)
+```text
+app の curl           → web:80
+Windows のブラウザー → 127.0.0.1:8080 → web:80
+```
 
 ### Docker Compose の起動
 
@@ -273,6 +283,7 @@ curl http://web:80
 `It's my created file!` と表示されれば成功です。
 
 `http://web` の `web` は、`compose.yaml` で定義したサービス名です。同じ Compose ネットワークに接続しているコンテナは、サービス名で互いに接続できます。
+ここでは `app` から `web` のコンテナ内ポート 80 へ接続しています。公開ポート 8080 を使うのは Windows のブラウザーから接続するときです。
 
 
 app サービスと web サービスのふたつのサービスを定義し、動作確認まで行いました。

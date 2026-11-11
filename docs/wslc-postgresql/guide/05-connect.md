@@ -6,6 +6,8 @@
 
 ## Windows 側の入口を確認する
 
+コンテナーが起動して接続を受け付けている状態で、Windows の PowerShell から実行します。[ポートの競合](../troubleshooting.md)で公開ポートを変更した場合は、この章のコマンド、接続設定、JDBC URL の `15432` を変更後の番号に読み替えてください。
+
 ```powershell
 Test-NetConnection -ComputerName 127.0.0.1 -Port 15432
 ```

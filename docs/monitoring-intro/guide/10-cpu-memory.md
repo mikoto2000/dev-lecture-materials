@@ -16,6 +16,8 @@ docker compose stats --no-stream kuma
 
 `--no-stream` は値を1回表示して終了する指定です。サービスは1つずつ指定します。`demo` がアプリ側、`kuma` が監視する側です。[Docker Compose stats](https://docs.docker.com/reference/cli/docker/compose/stats/)
 
+`docker compose stats` が使えない場合は、[代替手順](../troubleshooting.md)で同じコンテナーを計測します。
+
 - `CPU %`: コンテナーの CPU 使用率。Linux の表示では、複数の CPU を使うと100%を超える場合もある
 - `MEM USAGE / LIMIT`: コンテナーのメモリ使用量と、Docker が報告する利用上限
 - `MEM %`: その上限に対する使用量の割合
@@ -24,7 +26,7 @@ CPU の値は短い測定区間の値です。コマンドを実行していな�
 
 Linux コンテナーに対する Docker CLI のメモリ表示では、一部のキャッシュを差し引きます。`LIMIT` にはコンテナーの制限や、実行環境で利用できるメモリが関係します。アプリ専用に予約された量ではありません。[Docker stats の列とメモリ表示](https://docs.docker.com/reference/cli/docker/container/stats/)
 
-**ここで測るのは Docker Desktop 内の Linux コンテナーです。** Windows 全体の CPU・メモリー使用量ではありません。タスクマネージャーの値と同じ意味だと思って比べないでください。
+ここでは `demo` と `kuma` の使用量をコンテナーごとに測ります。Windows のタスクマネージャーが示す PC 全体の使用量とは、測定範囲が異なります。
 
 20秒ほど間を空けて、同じコマンドをもう一度実行します。同じ時間帯の `demo-item` の応答時間も記録します。Kuma の表示時刻とログの UTC、PowerShell の時刻のずれに注意して照合します。
 

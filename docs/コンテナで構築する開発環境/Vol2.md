@@ -30,12 +30,15 @@ Dev container では `devcontainer.json` という設定ファイルを使い、
 単に Docker コンテナを起動するだけでは、エディタ設定やツール構成までは共有できません。
 `devcontainer.json` を定義すれば、開発環境そのものを再現可能な形でチームに共有できます。
 
-![Dev Container](./images/vol2/dev-container.png)
+| 接続元 | 接続先 |
+|---|---|
+| Windows の VS Code | `app` コンテナ内の VS Code Server |
+| `app` コンテナ内の psql | `db` コンテナの PostgreSQL（`db:5432`） |
 
 ## 作業用ディレクトリの作成
 
 これ以降の作業は、 WSL2 のファイルシステム上に作業用ディレクトリを作成し、そこで進めます。
-WSL2 の Ubuntu 24.04 を起動し、次のコマンドで作業用ディレクトリを作成してください。
+WSL2 の Ubuntu 24.04 を起動し、`docker version` で Client と Server の両方が表示されることを確認します。続いて、次のコマンドで作業用ディレクトリを作成してください。すでに同じ名前のディレクトリがある場合は、未使用の名前を選びます。
 
 ```sh
 mkdir -p ~/tmp/devcontainer-handson/.devcontainer
@@ -64,13 +67,13 @@ Windows のファイルシステム上でも実行は可能だが、パフォー
 
 ### compose.yaml の作成
 
-AP サーバー兼開発サーバーの `app` と、 DB サーバーの `db` をサービスとして定義します。
+Java の開発用コンテナ `app` と、PostgreSQL が動く `db` をサービスとして定義します。`app` は将来 Spring Boot を実行する場所です。この演習では、`app` のターミナルから `db` に接続するところまでを確認します。
 
 `.devcontainer/compose.yaml` に、次の内容を記述してください。
 
 ```yaml
 services:
-  # AP サーバー兼開発コンテナ定義
+  # Java の開発コンテナ定義
   app:
     # Microsoft が提供している Dev container 向けの Java イメージ
     image: mcr.microsoft.com/devcontainers/java:3-21-trixie
@@ -110,6 +113,8 @@ volumes:
 ```
 
 この `password` は学習用のサンプル値です。実在のパスワードを流用せず、実際のプロジェクトでは秘密管理の仕組みを使ってください。`db` のポートはホストへ公開していません。
+
+`app` は Compose のサービス名 `db` をホスト名として、PostgreSQL の標準ポート 5432 に接続します。`postgres:18-trixie` は `/var/lib/postgresql` 配下のバージョン別ディレクトリにデータを保存します。PostgreSQL 17 の教材とはマウント先が異なります。[PostgreSQL 公式イメージの PGDATA の説明](https://hub.docker.com/_/postgres#pgdata)
 
 ### devcontainer.json の作成
 
@@ -153,17 +158,18 @@ volumes:
 code .
 ```
 
-`Do you trust the authors of the files in this folder?` というダイアログが表示されます。`Yes, I trust the authors` をクリックしてください。
+初回や VS Code の更新直後は、WSL 内に VS Code Server をダウンロードしてインストールする場合があります。ターミナルに進行状況が表示されるので、VS Code の起動まで待ちます。
 
-VS Code が表示され、左下に `WSL: Ubuntu-24.04` と表示されます。
+VS Code の左下に `WSL: Ubuntu-24.04` と表示されることを確認します。ワークスペースの信頼を尋ねられた場合は、自分で作成した教材用フォルダーを開いていることを確認し、`Yes, I trust the authors` を選びます。制限モード（Restricted Mode）のバナーが表示された場合は、「管理」（Manage）から同じフォルダーの信頼を設定します。
 
 
 ## Dev container 開発環境の起動
 
 1. Ctrl+Shift+P でコマンドパレットを開く
-2. `Dev Containers: Reopen in Container` を選択する
+2. `Dev Containers: Reopen in Container`（日本語表示では「開発コンテナー: コンテナーで再度開く」）を選択する
+3. 信頼確認が表示された場合は、自分で作成した教材用フォルダーであることを確認し、「フォルダーを信頼して続行」を選ぶ
 
-VS Code のウィンドウがリロードされ、左下に `Dev Container: Java Dev Container` と表示されます。
+VS Code のウィンドウがリロードされます。左下の接続先に `Dev Container: Java Dev Container`（日本語表示では「開発コンテナー: Java Dev Container」）が出るまで待ちます。
 
 これで、 Dev container による開発環境の立ち上げが完了しました。
 
@@ -171,12 +177,11 @@ VS Code のウィンドウがリロードされ、左下に `Dev Container: Java
 
 ## Dev container 開発環境の動作確認
 
-Spring Boot プロジェクトを作って DB へ接続するのは時間がかかりすぎます。
-代わりに app コンテナへ PostgreSQL クライアントをインストールし、そこから psql で DB に繋がることを確認します。
+`app` コンテナの Java と、`db` への接続を確認します。VS Code 左下の接続先が `Java Dev Container` になったら、新しい統合ターミナルを開きます。`java -version` で Java 21 が表示されることを確認してください。
 
 ### PostgreSQL クライアントのインストール
 
-VS Code でターミナルを開き、次のコマンドを実行してください。
+同じターミナルで次のコマンドを実行してください。
 コンテナ上に `psql` コマンドがインストールされます。
 
 ```sh

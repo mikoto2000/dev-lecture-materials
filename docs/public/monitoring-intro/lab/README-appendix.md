@@ -11,7 +11,7 @@ docker compose --profile notifications stop
 
 Ubuntu の Bash と Python 3.10 以上を使います。Python 標準ライブラリだけで動き、
 追加パッケージ、Docker、認証情報、本番環境、外部ネットワークは不要です。
-次の 5 ファイルを同じディレクトリに保存してください。
+配布 ZIP を本編とは別のフォルダーに展開してください。以下の 5 ファイルは ZIP に同梱されています。
 
 - `common.py`：共有処理。ほかのプログラムの実行にも必要
 - `app.py`：監視対象のアプリ

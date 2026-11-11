@@ -17,6 +17,8 @@ wslc container list --all
 
 ## 翌日の作業を始める
 
+`wslc container list --all` で対象を確認します。すでに動いていれば `start` を省略します。コンテナーを削除済みでボリュームが残っている場合は、この章の「コンテナーだけ作り直す」で、ボリュームの確認から始めます。
+
 ```powershell
 wslc container start wslc-workshop-db
 wslc exec wslc-workshop-db pg_isready -h 127.0.0.1 -U postgres -d workshop
@@ -34,11 +36,13 @@ wslc exec -it wslc-workshop-db psql -h 127.0.0.1 -U postgres -d workshop -W
 SELECT title, done FROM tasks ORDER BY id;
 ```
 
-3行と更新した `done` が残っていることを確認し、`\q` で戻ります。
+前章で確認した行数（例では3行）と更新した `done` が残っていることを確認し、`\q` で戻ります。
 
 ## コンテナーだけ作り直す
 
 ここで削除するのは **この教材の停止したコンテナーだけ**です。DB のボリュームは消しません。名前を一文字ずつ確認してから実行します。
+
+すでに停止している場合は `stop` を、すでに削除している場合は `stop` と `remove` を省略し、`volume inspect` から進めます。
 
 ```powershell
 wslc container stop wslc-workshop-db
@@ -62,7 +66,7 @@ wslc run -d --name wslc-workshop-db `
 wslc exec wslc-workshop-db pg_isready -h 127.0.0.1 -U postgres -d workshop
 ```
 
-準備完了後、同じ接続コマンドと SELECT で3行を確認します。コンテナーの ID は変わっても、ボリュームに保存したデータは残ります。
+`accepting connections` が出るまで待ち、同じ接続コマンドと SELECT で、行数と `done` の更新をもう一度確認します。コンテナーの ID は変わっても、ボリュームに保存したデータは残ります。
 
 ## なぜ残ったのか
 

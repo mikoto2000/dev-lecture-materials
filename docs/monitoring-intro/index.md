@@ -58,7 +58,6 @@ CPU 使用率、メモリー使用量、ディスク容量、ネットワーク�
 - [困ったとき](./troubleshooting.md)
 - [講師用ガイド](./facilitator.md)
 - [参考資料](./references.md)
-- [検証記録と未検証の範囲](./verification.md)
 - [補足: 自作監視の仕組みを読む](./appendix-custom-checker.md)
 
 [準備へ進む](./guide/00-prepare.md)
