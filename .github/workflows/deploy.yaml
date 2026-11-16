@@ -6,7 +6,15 @@ on:
       - main
 
 jobs:
+  verify:
+    permissions:
+      contents: read
+    uses: ./.github/workflows/check-monitoring.yml
+
   build:
+    needs: verify
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
 
     steps:
@@ -19,7 +27,7 @@ jobs:
         node-version: '22'
 
     - name: Install dependencies
-      run: npm install
+      run: npm ci
 
     - name: Build project
       run: npm run build

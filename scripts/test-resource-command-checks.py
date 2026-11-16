@@ -5,6 +5,7 @@ from __future__ import annotations
 import contextlib
 import importlib.util
 import io
+import json
 from pathlib import Path
 import sys
 import unittest
@@ -18,14 +19,14 @@ spec.loader.exec_module(lab)
 
 SPACE = "Filesystem Size Used Avail Use% Mounted on\n/dev/test 100G 99G 1G 99% /lab/.state\n"
 INODES = "Filesystem Inodes IUsed IFree IUse% Mounted on\n/dev/test 1000 999 1 100% /lab/.state\n"
-STATS_HEADER = "CONTAINER ID NAME CPU % MEM USAGE / LIMIT MEM % NET I/O BLOCK I/O PIDS\n"
 PING = "3 packets transmitted, 3 received, 0% packet loss, time 2000ms\n"
 
 
 def stats(service):
     # Large values are legitimate observations, not portable failure thresholds.
-    return (STATS_HEADER + f"abcdef123456 {lab.PROJECT}-{service}-1 250.00% "
-            "950MiB / 1GiB 92.77% 1kB / 2kB 3kB / 4kB 999\n")
+    return json.dumps({"Name": f"{lab.PROJECT}-{service}-1", "CPUPerc": "250.00%",
+                       "MemUsage": "950MiB / 1GiB", "MemPerc": "92.77%",
+                       "NetIO": "1kB / 2kB", "BlockIO": "3kB / 4kB", "PIDs": "999"}) + "\n"
 
 
 class ObservationTests(unittest.TestCase):
@@ -40,8 +41,8 @@ class ObservationTests(unittest.TestCase):
         self.assertEqual(run.call_args_list, [
             mock.call("exec", "-T", "demo", "df", "-h", "/lab/.state", timeout=15),
             mock.call("exec", "-T", "demo", "df", "-i", "/lab/.state", timeout=15),
-            mock.call("stats", "--no-stream", "demo", timeout=30),
-            mock.call("stats", "--no-stream", "kuma", timeout=30),
+            mock.call("stats", "--no-stream", "--format", "json", "demo", timeout=30),
+            mock.call("stats", "--no-stream", "--format", "json", "kuma", timeout=30),
         ])
 
     def test_resource_output_must_identify_requested_observation(self):
@@ -49,7 +50,7 @@ class ObservationTests(unittest.TestCase):
             ["", INODES, stats("demo"), stats("kuma")],
             [SPACE.replace("/lab/.state", "/"), INODES, stats("demo"), stats("kuma")],
             [SPACE, SPACE, stats("demo"), stats("kuma")],
-            [SPACE, INODES, stats("demo").replace("PIDS", "OTHER"), stats("kuma")],
+            [SPACE, INODES, stats("demo").replace("PIDs", "OTHER"), stats("kuma")],
             [SPACE, INODES, stats("demo").replace(lab.PROJECT, "another-project"), stats("kuma")],
             [SPACE, INODES, stats("demo") + stats("kuma"), stats("kuma")],
         ):

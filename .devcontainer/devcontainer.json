@@ -1,4 +1,5 @@
 {
   "name": "Node.js",
+  // Follow image updates within the Node 22, Debian Bookworm variant.
   "image": "mcr.microsoft.com/devcontainers/javascript-node:1-22-bookworm"
 }

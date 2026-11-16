@@ -68,5 +68,5 @@ assert.ok(mainText.includes('louislam/uptime-kuma:2.5.5'), 'Missing pinned stabl
 assert.ok(mainText.includes('http://demo:18080/health'), 'Missing container-network monitor URL');
 assert.ok(!/```bash/m.test(mainText), 'Main course commands must stay in PowerShell');
 assert.ok(!/^(?:python3 )?(?:monitor|watchdog)\.py/m.test(mainText), 'Custom checker belongs only in appendix');
-execFileSync('python3', ['scripts/package-monitoring-lab.py', '--check'], { stdio: 'inherit' });
+execFileSync(process.execPath, ['scripts/monitoring-python.mjs', 'check-package'], { stdio: 'inherit' });
 console.log(`PASS: ${pages.length} monitoring pages, local links, sidebar, downloads, course entry and lesson structure`);

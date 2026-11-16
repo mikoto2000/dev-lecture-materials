@@ -1,4 +1,4 @@
-# シリーズ: Dev Container で構築する開発環境 目次
+# Dev Container 教材の章一覧
 
 - [イントロダクション](./コンテナで構築する開発環境/INTRODUCTION.md)
 - [Vol.0 開発環境構築](./コンテナで構築する開発環境/Vol0.md)

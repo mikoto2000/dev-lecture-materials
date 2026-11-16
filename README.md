@@ -35,6 +35,8 @@ npm run dev
 ```bash
 npm run lint
 npx tsc --noEmit
+npm run textlint
+npm run check:devcontainer
 npm run check:wslc
 npm run check:monitoring
 npm run test:monitoring
@@ -46,7 +48,9 @@ npm run preview
 
 ビルド時にリンク切れを検査します。教材追加時には共通トップからの導線、教材固有の目次、前後の章へのリンク、既存公開URLも確認してください。
 
-`npm run textlint` は `docs` 配下の Markdown 全体を対象に実行でき、現在は指摘 0 件です。文体の修正は教材の再構成と分けて扱います。
+PR では全教材の textlint、教材ごとの静的検査、監視ラボの試験、サイトビルドを実行します。GitHub Pages への公開時も、公開対象のコミットで同じ検証を実行します。
+
+`npm run check` は Biome の検査を実行します。修正も適用する場合は `npm run check:fix` を使います。
 
 ## wslc 教材の配布資料
 
@@ -59,5 +63,7 @@ SQL と PowerShell の例は `docs/public/wslc-postgresql/examples/` に格納�
 `docs/public/monitoring-intro/lab/` に Uptime Kuma 2.5.5 と学習用アプリの Compose 環境を格納します。本編は Windows PowerShell / Docker Desktop を基本とし、WSL 2 上の Docker Engine で進める手順もあります。監視は Kuma の GUI で設定します。受講者向けには教材トップから ZIP を配布します。ラボを変更したら `npm run package:monitoring` で ZIP を再生成します。
 
 自作の `monitor.py` / `watchdog.py` は任意の補足です。本編の監視には使用しません。
+
+章の表示順は `docs/monitoring-intro/_meta.json` で管理します。ファイル名は公開 URL の維持に使うため、表示順と異なる場合があります。たとえば `07-watchdog.md` は第10章です。
 
 `npm run test:monitoring` は Python 3.10 以降が必要です。`check:monitoring-compose` は Docker CLI と Compose（v2 または v5）、`test:monitoring-compose` は Docker の実行環境も必要です。後者は試験専用のプロジェクトとボリュームを作成し、終了時に削除します。
