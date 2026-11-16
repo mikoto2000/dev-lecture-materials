@@ -1,16 +1,8 @@
-name: Check monitoring course
+name: Check courses
 
 on:
   pull_request:
-    paths:
-      - 'docs/monitoring-intro/**'
-      - 'docs/public/monitoring-intro/**'
-      - 'docs/index.md'
-      - 'docs/_nav.json'
-      - 'scripts/*monitoring*'
-      - 'package*.json'
-      - 'rspress.config.ts'
-      - '.github/workflows/check-monitoring.yml'
+  workflow_call:
   workflow_dispatch:
 
 permissions:
@@ -32,7 +24,8 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npx tsc --noEmit
-      - run: npx textlint docs/monitoring-intro
+      - run: npm run textlint
+      - run: npm run check:devcontainer
       - run: npm run check:wslc
       - run: npm run check:monitoring
       - run: npm run test:monitoring

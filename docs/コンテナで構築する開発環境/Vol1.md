@@ -60,6 +60,8 @@ Dockerfile ── docker build ──> イメージ
 docker run --rm httpd:2.4
 ```
 
+`httpd:2.4` は Apache 2.4 系のパッチ更新を取り込むタグです。下の起動ログに出るパッチ番号は、取得したイメージによって変わります。
+
 次のような実行結果が表示されます。これで Apache HTTP Server コンテナが起動します。
 
 ```sh
@@ -144,8 +146,9 @@ Docker イメージの基本的な使い方は理解できたはずです。
 FROM ubuntu:24.04
 
 # Apache HTTP Server をインストール
-RUN apt update \
- && apt install -y apache2
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends apache2 \
+ && rm -rf /var/lib/apt/lists/*
 
 # apache HTTP Server の起動に必要なディレクトリを作成
 RUN mkdir -p /var/run/apache2 /var/lock/apache2
@@ -173,6 +176,8 @@ docker build -t my-httpd:latest .
 - `.` はビルド時に参照できるファイルの範囲（ビルドコンテキスト）として、現在のディレクトリーを指定する。この例では、その直下の `Dockerfile` が使われる
 
 次に、`docker images` コマンドで、ビルドしたイメージが作成されていることを確認します。
+
+表示される列は Docker のバージョンやイメージストアによって異なります。イメージ名とタグでビルドしたイメージを確認してください。
 次のように `my-httpd:latest` イメージが表示されれば成功です。
 
 ```sh
@@ -310,4 +315,6 @@ docker compose down
 - [docker | Docker Docs](https://docs.docker.com/reference/cli/docker/)
 - [docker compose | Docker Docs](https://docs.docker.com/reference/cli/docker/compose/)
 - [ポート公開 | Docker Docs](https://docs.docker.com/engine/network/port-publishing/)
+
+[次へ: Dev Container 入門](./Vol2.md)
 

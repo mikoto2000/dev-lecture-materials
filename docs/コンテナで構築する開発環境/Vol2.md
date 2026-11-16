@@ -116,6 +116,8 @@ volumes:
 
 `app` は Compose のサービス名 `db` をホスト名として、PostgreSQL の標準ポート 5432 に接続します。`postgres:18-trixie` は `/var/lib/postgresql` 配下のバージョン別ディレクトリにデータを保存します。PostgreSQL 17 の教材とはマウント先が異なります。[PostgreSQL 公式イメージの PGDATA の説明](https://hub.docker.com/_/postgres#pgdata)
 
+Java 21、PostgreSQL 18、Debian Trixie の組み合わせの中で更新を取り込むため、上のイメージタグはパッチ版を指定していません。取得した時期によって、Java や PostgreSQL のパッチ番号は変わります。
+
 ### devcontainer.json の作成
 
 次に、主に「VS Code でどのコンテナに接続し、どんな拡張機能を使うか」を定義していきます。
@@ -211,4 +213,6 @@ PGPASSWORD="$MAIN_DB_PASSWORD" psql -U "$MAIN_DB_USER" -h "$MAIN_DB_HOSTNAME" -d
 開発環境の共有方法は簡単で、プロジェクトのリポジトリ（Git リポジトリなど）に `.devcontainer` を含めるだけです。
 
 こうすることで、 `git clone` をしたのち、プロジェクトディレクトリを VS Code + Dev container 拡張機能を使って開くだけで共通の開発環境を使用できます。
+
+[次へ: まとめ](./まとめ.md)
 

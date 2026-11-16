@@ -26,6 +26,8 @@ wslc volume --help
 
 `wsl --version` の **WSL バージョン**が 2.9.3 以上であることを確認します。`wsl -l -v` に出る `VERSION 2` は別の値です。
 
+2.9.3 は Microsoft が示す最低要件です。教材の手順は WSL / wslc 3.0.5.0 で実機確認しました。
+
 `wslc` がない場合は、[公式の導入手順](https://learn.microsoft.com/ja-jp/windows/wsl/tutorials/wsl-containers)に従ってください。既に WSL がある場合、更新コマンドは次です。更新や再起動に備え、授業開始直前の実行を避けてください。会社 PC は管理者のルールに従います。
 
 ```powershell

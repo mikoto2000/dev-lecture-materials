@@ -81,16 +81,15 @@ def observe_resources():
     # --no-stream takes one sample. Do not require a particular utilization,
     # memory limit, or PIDS count: those vary by host, image, and sample time.
     for service in ("demo", "kuma"):
-        output = compose("stats", "--no-stream", service, timeout=30)
-        lines = output.strip().splitlines()
-        assert len(lines) == 2, output
-        header = " ".join(lines[0].split())
-        for column in ("CPU %", "MEM USAGE / LIMIT", "MEM %", "NET I/O", "BLOCK I/O", "PIDS"):
-            assert column in header, output
-        fields = lines[1].split()
-        assert len(fields) >= 4, output
-        assert fields[1] == f"{PROJECT}-{service}-1", output
-        assert fields[2].endswith("%") and fields[-1].isdigit(), output
+        output = compose("stats", "--no-stream", "--format", "json", service, timeout=30)
+        lines = output.splitlines()
+        assert len(lines) == 1, output
+        sample = json.loads(lines[0])
+        assert isinstance(sample, dict), output
+        assert sample.get("Name") == f"{PROJECT}-{service}-1", output
+        assert all(isinstance(sample.get(field), str) and sample[field]
+                   for field in ("CPUPerc", "MemUsage", "MemPerc", "NetIO", "BlockIO", "PIDs")), output
+        assert sample["CPUPerc"].endswith("%") and sample["PIDs"].isdigit(), output
         print(f"OBSERVE: {service} stats (one sample)\n{output}", flush=True)
     print("PASS: bounded disk, inode, CPU, memory, and PIDS observations", flush=True)
 

@@ -25,6 +25,12 @@ for (const file of files) {
       : path.resolve(path.dirname(file), target);
     assert.ok(existsSync(local), `${file}: missing ${target}`);
   }
+  for (const match of text.matchAll(/href="\.\/([^"]+)"/g)) {
+    const routeDirectory = path.dirname(path.relative(docs, file));
+    const asset = path.join(docs, 'public', routeDirectory, match[1]);
+    const local = path.resolve(path.dirname(file), match[1]);
+    assert.ok(existsSync(asset) || existsSync(local), `${file}: missing ${match[1]}`);
+  }
 }
 const metadata = JSON.parse(readFileSync(path.join(root, '_meta.json'), 'utf8'));
 for (const item of metadata) {
@@ -32,10 +38,6 @@ for (const item of metadata) {
     : item.type === 'custom-link' ? path.join(docs, `${item.link}.md`)
       : path.join(root, `${item.name}.md`);
   assert.ok(existsSync(target), `Sidebar target missing: ${target}`);
-}
-const index = readFileSync(path.join(root, 'index.md'), 'utf8');
-for (const match of index.matchAll(/href="\.\/examples\/([^"]+)"/g)) {
-  assert.ok(existsSync(path.join(docs, 'public/wslc-postgresql/examples', match[1])), `Missing download: ${match[1]}`);
 }
 const commands = readFileSync(path.join(docs, 'public/wslc-postgresql/examples/commands.ps1.txt'), 'utf8');
 const allText = [...files.map(file => readFileSync(file, 'utf8')), commands].join('\n');

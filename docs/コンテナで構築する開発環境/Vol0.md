@@ -202,7 +202,7 @@ For more examples and ideas, visit:
 
 以上で、Docker のインストールと動作確認は完了です。お疲れさまでした。
 
-`docker compose version` で Compose のバージョンも表示されることを確認し、[Vol.1](./Vol1.md) に進みます。
+`docker compose version` で、Docker CLI に統合された Compose v2 または v5 のバージョンが表示されることを確認します。[Docker Compose のバージョン](https://docs.docker.com/compose/intro/history/)
 
 
 ## 参考資料
@@ -210,3 +210,5 @@ For more examples and ideas, visit:
 - [WSL のインストール | Microsoft Learn](https://learn.microsoft.com/ja-jp/windows/wsl/install)
 - [WSL のトラブルシューティング | Microsoft Learn](https://learn.microsoft.com/ja-jp/windows/wsl/troubleshooting)
 - [Ubuntu | Docker Docs](https://docs.docker.com/engine/install/ubuntu/)
+
+[次へ: Docker / Docker Compose 入門](./Vol1.md)

@@ -1,7 +1,8 @@
 [
   {
     "text": "教材一覧",
-    "link": "/"
+    "link": "/",
+    "activeMatch": "^/(index(?:\\.html)?)?$"
   },
   {
     "text": "Dev Container",
@@ -17,5 +18,10 @@
     "text": "インフラ監視",
     "link": "/monitoring-intro/",
     "activeMatch": "^/monitoring-intro/"
+  },
+  {
+    "text": "アクセス解析",
+    "link": "/privacy",
+    "activeMatch": "^/privacy(?:\\.html)?$"
   }
 ]
