@@ -11,10 +11,31 @@ import threading
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-from common import (DELAY_NAME, HOST, LOG_NAME, PORT, LabError, database_path,
-                    read_json, state_path, utc_now)
+from common import (DELAY_NAME, HOST, LOG_NAME, PORT, ROTATED_LOG_NAME, LabError,
+                    database_path, read_json, state_path, utc_now)
 
 LOG_LOCK = threading.Lock()
+MAX_LOG_BYTES = 1024 * 1024
+
+
+def append_request_log(line: str) -> None:
+    """Append one record while the caller holds LOG_LOCK."""
+    record = (line + "\n").encode("utf-8")
+    log = state_path(LOG_NAME)
+    size = log.stat().st_size if log.exists() else 0
+    if size + len(record) > MAX_LOG_BYTES:
+        rotated = state_path(ROTATED_LOG_NAME)
+        if size > MAX_LOG_BYTES:
+            # Keep a bounded tail from logs created before rotation was added.
+            with log.open("rb") as stream:
+                stream.seek(size - MAX_LOG_BYTES - 1)
+                stream.readline()
+                rotated.write_bytes(stream.read(MAX_LOG_BYTES))
+            log.unlink()
+        else:
+            log.replace(rotated)
+    with log.open("ab") as stream:
+        stream.write(record)
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -79,8 +100,7 @@ class Handler(BaseHTTPRequestHandler):
         line = json.dumps(record, sort_keys=True)
         with LOG_LOCK:
             try:
-                with state_path(LOG_NAME).open("a", encoding="utf-8") as stream:
-                    stream.write(line + "\n")
+                append_request_log(line)
             except (OSError, LabError) as exc:
                 print(f"LOG ERROR: {type(exc).__name__}", file=sys.stderr, flush=True)
             print(line, flush=True)
@@ -104,6 +124,7 @@ def main() -> int:
     try:
         database_path()
         state_path(LOG_NAME)
+        state_path(ROTATED_LOG_NAME)
         state_path(DELAY_NAME)
         with Server((args.host, PORT), Handler) as server:
             print(f"Lab app: http://{args.host}:{PORT} (Ctrl+C to stop)", flush=True)

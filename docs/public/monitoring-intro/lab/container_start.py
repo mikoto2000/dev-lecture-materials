@@ -6,15 +6,15 @@ import os
 import sqlite3
 import sys
 
-from common import (DELAY_NAME, LAB_DIR, LOG_NAME, PARKED_NAME, LabError,
-                    database_path, state_dir, state_path)
+from common import (DELAY_NAME, LAB_DIR, LOG_NAME, PARKED_NAME, ROTATED_LOG_NAME,
+                    LabError, database_path, state_dir, state_path)
 from labctl import reset
 
 
 def initialize_if_empty() -> bool:
     directory = state_dir()
     database_path()
-    for name in (PARKED_NAME, DELAY_NAME, LOG_NAME):
+    for name in (PARKED_NAME, DELAY_NAME, LOG_NAME, ROTATED_LOG_NAME):
         state_path(name)
     # A parked DB, delay setting, log, or unknown file means existing state.
     # Never silently turn a fault into recovery or overwrite a learner's files.

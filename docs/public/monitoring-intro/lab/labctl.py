@@ -8,13 +8,13 @@ import sqlite3
 import sys
 
 from common import (DB_NAME, DEFAULT_STATE, DELAY_NAME, LOG_NAME, PARKED_NAME,
-                    LabError, atomic_json, bounded_float, database_path,
+                    ROTATED_LOG_NAME, LabError, atomic_json, bounded_float, database_path,
                     observation_path, read_json, state_path)
 
 
 # No directory removal or wildcard deletion; unknown files are left untouched.
 RESET_FILES = (DB_NAME, PARKED_NAME, DB_NAME + "-journal", DB_NAME + "-wal",
-               DB_NAME + "-shm", DELAY_NAME, LOG_NAME, "last-check.json")
+               DB_NAME + "-shm", DELAY_NAME, LOG_NAME, ROTATED_LOG_NAME, "last-check.json")
 
 
 def reset() -> None:
