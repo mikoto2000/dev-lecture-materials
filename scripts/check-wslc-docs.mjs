@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
+import { parseArgs } from 'node:util';
 
 const docs = path.resolve('docs');
 const root = path.join(docs, 'wslc-postgresql');
@@ -39,17 +40,53 @@ for (const item of metadata) {
       : path.join(root, `${item.name}.md`);
   assert.ok(existsSync(target), `Sidebar target missing: ${target}`);
 }
-const commands = readFileSync(path.join(docs, 'public/wslc-postgresql/examples/commands.ps1.txt'), 'utf8');
-const allText = [...files.map(file => readFileSync(file, 'utf8')), commands].join('\n');
+const commandSheet = path.join(docs, 'public/wslc-postgresql/examples/commands.ps1.txt');
+const sources = new Map([...files, commandSheet].map(file => [file, readFileSync(file, 'utf8')]));
+const allText = [...sources.values()].join('\n');
 assert.ok(!/^\s*wslc .*\bprune\b/m.test(allText), 'Broad prune command found');
 assert.ok(!/postgres:(?:latest|18)\b/.test(allText), 'PostgreSQL version drift');
-for (const file of ['guide/02-start.md', 'guide/04-persist.md']) {
-  const text = readFileSync(path.join(root, file), 'utf8');
-  for (const required of ['postgres:17', '127.0.0.1:15432:5432',
-    'wslc-workshop-pgdata:/var/lib/postgresql/data',
-    'POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256']) {
-    assert.ok(text.includes(required), `${file}: missing ${required}`);
-    assert.ok(commands.includes(required), `Command sheet: missing ${required}`);
+const requiredSources = new Set([
+  path.join(root, 'guide/02-start.md'),
+  path.join(root, 'guide/04-persist.md'),
+  commandSheet,
+]);
+for (const [file, text] of sources) {
+  const lines = text.replace(/`\r?\n[ \t]*/g, ' ');
+  const runs = [...lines.matchAll(/^[ \t]*wslc[ \t]+run[ \t]+([^\r\n]+)$/gmi)]
+    .filter(([, command]) => !/^(?:-h|--help)$/.test(command.trim()));
+  if (requiredSources.has(file)) {
+    assert.ok(runs.length, `${file}: PostgreSQL startup command missing`);
+  }
+  for (const [, command] of runs) {
+    let parsed;
+    try {
+      parsed = parseArgs({
+        args: command.trim().split(/\s+/),
+        allowPositionals: true,
+        tokens: true,
+        options: {
+          detach: { type: 'boolean', short: 'd' },
+          name: { type: 'string' },
+          env: { type: 'string', short: 'e', multiple: true },
+          publish: { type: 'string', short: 'p', multiple: true },
+          volume: { type: 'string', short: 'v', multiple: true },
+        },
+      });
+    } catch (error) {
+      throw new Error(`${file}: invalid wslc run arguments`, { cause: error });
+    }
+    const { values, positionals, tokens } = parsed;
+    assert.equal(tokens.at(-1)?.kind, 'positional', `${file}: put the image after the options`);
+    assert.deepEqual(positionals, ['postgres:17'], `${file}: use the PostgreSQL 17 image`);
+    assert.equal(values.detach, true, `${file}: start the workshop database in the background`);
+    assert.equal(values.name, 'wslc-workshop-db', `${file}: use the workshop container name`);
+    assert.deepEqual(values.publish, ['127.0.0.1:15432:5432'], `${file}: publish only to loopback`);
+    assert.deepEqual(values.volume, ['wslc-workshop-pgdata:/var/lib/postgresql/data'], `${file}: use the workshop data volume`);
+    assert.deepEqual((values.env ?? []).toSorted(), [
+      'POSTGRES_DB=workshop',
+      'POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256',
+      'POSTGRES_PASSWORD=workshop-local-only',
+    ], `${file}: use the workshop database and SCRAM authentication`);
   }
 }
 assert.ok(existsSync(path.join(docs, 'public/wslc-postgresql/examples/01-tasks.sql')));
