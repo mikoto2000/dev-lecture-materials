@@ -27,6 +27,16 @@ Docker Desktop の場合、`df` やコンテナー統計は Linux コンテナ�
 - ローカル Webhook の Test と、実際の Down / Up を確認できる
 - 各故障の解除、設定保持、データを消す後片付けを区別できる
 
+### Docker Desktop で開催する場合の通し確認
+
+開催前に、受講者と同じ Windows・Docker Desktop の構成で、公開ページからダウンロードした ZIP を使って確認します。既存のラボがある場合は、配布 README の手順で検証用のプロジェクト名とホスト側ポートを分けてください。
+
+1. PowerShell で[準備](./guide/00-prepare.md)の手順を実行し、Windows のブラウザーで Kuma と実験アプリを開く。Kuma で SQLite と実験用アカウントを設定し、`demo-health` が Up になることを確認する
+2. [通知の章](./guide/05-alerts.md)に沿って Webhook を登録する。Test の受信を確認し、実験アプリを停止・再開して、実際の Down と Up が受信ログに残ることを確認する
+3. [後片付け](./guide/08-review.md)に沿ってボリュームを残したまま再起動し、監視設定が残ることを確認する。確認後は検証用ラボのボリュームを削除する
+
+確認日、Windows と Docker Desktop のバージョン、`docker version` と `docker compose version` の結果、各項目の成否を記録します。リポジトリ内の検証記録には WSL 2 上の Docker Engine での結果を掲載しています。
+
 ## 安全上の約束
 
 本編は PowerShell で示します。WSL の Docker Engine を使う場合の読み替えは[準備](./guide/00-prepare.md)に記載しています。Docker 内部の `demo` という名前と、Windows のブラウザーで使う `127.0.0.1` を区別します。
