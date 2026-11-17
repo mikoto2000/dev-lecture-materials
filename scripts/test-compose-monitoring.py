@@ -10,6 +10,7 @@ from __future__ import annotations
 import http.client
 import ipaddress
 import json
+import os
 from pathlib import Path
 import socket
 import subprocess
@@ -142,6 +143,10 @@ def main():
     # Do not stop another lab, overwrite its ports, or touch its data.
     for port in (13001, 18080):
         with socket.socket() as probe:
+            # On POSIX, a just-closed test server can leave TIME_WAIT sockets.
+            # Address reuse still rejects a port with an active TCP listener.
+            if os.name == "posix":
+                probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             try:
                 probe.bind(("127.0.0.1", port))
             except OSError as exc:
