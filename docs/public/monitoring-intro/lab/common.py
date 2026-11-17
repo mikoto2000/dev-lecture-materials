@@ -15,6 +15,7 @@ STATE_DIR = LAB_DIR / ".state"
 DB_NAME = "lab.sqlite3"
 PARKED_NAME = "lab.sqlite3.unavailable"
 LOG_NAME = "requests.jsonl"
+ROTATED_LOG_NAME = "requests.jsonl.1"
 DELAY_NAME = "delay.json"
 DEFAULT_STATE = ".state/last-check.json"
 HOST, PORT = "127.0.0.1", 18080

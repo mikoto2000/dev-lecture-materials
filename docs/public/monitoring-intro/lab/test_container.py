@@ -74,6 +74,26 @@ class StartupTests(unittest.TestCase):
         self.assertEqual(keep.read_text(), "owned learner state")
         self.assertFalse((self.state / common.DB_NAME).exists())
 
+    def test_request_logs_keep_only_current_and_previous_file(self):
+        with mock.patch.object(app, "MAX_LOG_BYTES", 8):
+            for line in ("one", "two", "yes", "new", "end"):
+                app.append_request_log(line)
+        log = self.state / common.LOG_NAME
+        rotated = self.state / common.ROTATED_LOG_NAME
+        self.assertEqual(log.read_bytes(), b"end\n")
+        self.assertEqual(rotated.read_bytes(), b"yes\nnew\n")
+        labctl.reset()
+        self.assertFalse(log.exists())
+        self.assertFalse(rotated.exists())
+
+    def test_oversized_existing_request_log_keeps_complete_tail_records(self):
+        log = common.state_path(common.LOG_NAME)
+        log.write_bytes(b"oldest\nolder\nnew\n")
+        with mock.patch.object(app, "MAX_LOG_BYTES", 8):
+            app.append_request_log("end")
+        self.assertEqual(log.read_bytes(), b"end\n")
+        self.assertEqual((self.state / common.ROTATED_LOG_NAME).read_bytes(), b"new\n")
+
     def test_known_symlink_is_rejected(self):
         self.state.mkdir()
         outside = Path(self.temporary.name) / "outside.txt"
