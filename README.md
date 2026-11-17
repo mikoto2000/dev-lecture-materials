@@ -32,6 +32,8 @@ npm run dev
 
 ## 検証
 
+一連の検証は Linux で実行します。Windows では、Docker Engine を利用できる WSL 2 の Ubuntu を開き、その中で `npm ci` を実行してから進めてください。Python ラボの実行テストもこの Linux 環境を使います。
+
 ```bash
 npm run lint
 npx tsc --noEmit

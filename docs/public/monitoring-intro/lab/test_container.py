@@ -41,7 +41,7 @@ class StartupTests(unittest.TestCase):
         self.temporary.cleanup()
 
     def row(self, name=common.DB_NAME):
-        with sqlite3.connect(self.state / name) as db:
+        with contextlib.closing(sqlite3.connect(self.state / name)) as db:
             return db.execute("SELECT id, name FROM items").fetchall()
 
     def test_first_start_seeds_only_once(self):
