@@ -13,6 +13,8 @@
     "preview": "rspress preview",
     "check:devcontainer": "node scripts/check-devcontainer-docs.mjs",
     "check:wslc": "node scripts/check-wslc-docs.mjs",
+    "check:access-log": "node scripts/check-access-log-docs.mjs",
+    "test:access-log": "pwsh -NoProfile -File scripts/test-access-log.ps1",
     "package:monitoring": "node scripts/monitoring-python.mjs package",
     "check:monitoring": "node scripts/check-monitoring-docs.mjs",
     "test:monitoring": "node scripts/monitoring-python.mjs test",

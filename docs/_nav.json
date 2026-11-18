@@ -20,6 +20,11 @@
     "activeMatch": "^/monitoring-intro/"
   },
   {
+    "text": "アクセスログ監視",
+    "link": "/access-log-monitoring/",
+    "activeMatch": "^/access-log-monitoring/"
+  },
+  {
     "text": "アクセス解析",
     "link": "/privacy",
     "activeMatch": "^/privacy(?:\\.html)?$"

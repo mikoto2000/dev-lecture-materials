@@ -27,6 +27,8 @@ jobs:
       - run: npm run textlint
       - run: npm run check:devcontainer
       - run: npm run check:wslc
+      - run: npm run check:access-log
+      - run: npm run test:access-log
       - run: npm run check:monitoring
       - run: npm run test:monitoring
       - run: npm run build

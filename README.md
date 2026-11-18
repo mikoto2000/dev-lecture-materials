@@ -10,6 +10,8 @@
 
 - [インフラ監視実践入門](docs/monitoring-intro/index.md): Uptime Kuma による動作確認から、通知・遅さ・ログ・容量・CPU/メモリー・通信へ段階的に広げる教材
 
+- [アクセスログ監視入門](docs/access-log-monitoring/index.md): PowerShell と架空のログで、失敗・遅さの集計、時間窓と母数、異常・復旧の判断を学ぶ60〜90分の教材
+
 ## 構成と公開URL
 
 - `docs/index.md`: 教材を選ぶ共通トップページ
@@ -40,6 +42,8 @@ npx tsc --noEmit
 npm run textlint
 npm run check:devcontainer
 npm run check:wslc
+npm run check:access-log
+npm run test:access-log
 npm run check:monitoring
 npm run test:monitoring
 npm run check:monitoring-compose
@@ -51,6 +55,8 @@ npm run preview
 ビルド時にリンク切れを検査します。教材追加時には共通トップからの導線、教材固有の目次、前後の章へのリンク、既存公開URLも確認してください。
 
 PR では全教材の textlint、教材ごとの静的検査、監視ラボの試験、サイトビルドを実行します。GitHub Pages への公開時も、公開対象のコミットで同じ検証を実行します。
+
+アクセスログ教材の `test:access-log` は PowerShell 7 (`pwsh`) が必要です。配布スクリプトは Windows PowerShell 5.1 でも使用できます。5.1 での検査は `powershell -NoProfile -File scripts/test-access-log.ps1` で実行します。
 
 `npm run check` は Biome の検査を実行します。修正も適用する場合は `npm run check:fix` を使います。
 

@@ -18,6 +18,10 @@ hero:
       text: インフラ監視実践入門
       link: /monitoring-intro/
 
+    - theme: alt
+      text: アクセスログ監視入門
+      link: /access-log-monitoring/
+
 features:
   - title: Dev Container で構築する開発環境
     details: Docker・Docker Compose の基礎から、Dev Container による開発環境づくりまで学ぶ教材です。
@@ -28,4 +32,7 @@ features:
   - title: インフラ監視実践入門
     details: Uptime Kuma の動作確認から、通知・遅さ・ログ・容量・CPU/メモリー・通信へ観測を足す実践教材です。
     link: /monitoring-intro/
+  - title: アクセスログ監視入門
+    details: 架空のログを使い、失敗と遅さの集計から異常・復旧の判定まで学ぶ60〜90分の教材です。
+    link: /access-log-monitoring/
 ---

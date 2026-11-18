@@ -1,0 +1,12 @@
+[
+  { "type": "file", "name": "index", "label": "はじめに" },
+  { "type": "custom-link", "label": "準備: ログと集計スクリプト", "link": "/access-log-monitoring/guide/00-prepare" },
+  { "type": "custom-link", "label": "1. 1行を読む", "link": "/access-log-monitoring/guide/01-read" },
+  { "type": "custom-link", "label": "2. 時間と条件で絞る", "link": "/access-log-monitoring/guide/02-filter" },
+  { "type": "custom-link", "label": "3. 件数と割合を比べる", "link": "/access-log-monitoring/guide/03-measure" },
+  { "type": "custom-link", "label": "4. 監視の条件を決める", "link": "/access-log-monitoring/guide/04-monitor" },
+  { "type": "custom-link", "label": "5. 調査と後片付け", "link": "/access-log-monitoring/guide/05-review" },
+  "troubleshooting",
+  "facilitator",
+  "references"
+]
