@@ -1,0 +1,59 @@
+name: access-log-lab
+services:
+  demo:
+    image: python:3.12.14-slim
+    command: [python, -u, /lab/demo.py, server]
+    volumes:
+      - ./demo.py:/lab/demo.py:ro
+      - access-logs:/logs
+      - demo-state:/state
+    ports:
+      - "127.0.0.1:18780:8080"
+  traffic:
+    image: python:3.12.14-slim
+    command: [python, -u, /lab/demo.py, traffic]
+    volumes:
+      - ./demo.py:/lab/demo.py:ro
+    depends_on: [demo]
+  alloy:
+    image: grafana/alloy:v1.22.0
+    command: [run, --storage.path=/var/lib/alloy/data, /etc/alloy/config.alloy]
+    volumes:
+      - ./config.alloy:/etc/alloy/config.alloy:ro
+      - access-logs:/logs:ro
+      - alloy-data:/var/lib/alloy/data
+    depends_on: [loki, demo]
+  loki:
+    image: grafana/loki:3.7.10
+    command: [-config.file=/etc/loki/local.yaml]
+    volumes:
+      - ./loki.yaml:/etc/loki/local.yaml:ro
+      - loki-data:/loki
+  grafana:
+    image: grafana/grafana:13.3.1
+    environment:
+      GF_SECURITY_ADMIN_USER: learner
+      GF_SECURITY_ADMIN_PASSWORD: access-log-local-only
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+      GF_LOG_LEVEL: warn
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/access-log.json
+    ports:
+      - "127.0.0.1:13000:3000"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    depends_on: [loki, notification-sink]
+  notification-sink:
+    image: python:3.12.14-slim
+    command: [python, -u, /lab/demo.py, sink]
+    volumes:
+      - ./demo.py:/lab/demo.py:ro
+volumes:
+  access-logs:
+  demo-state:
+  alloy-data:
+  loki-data:
+  grafana-data:

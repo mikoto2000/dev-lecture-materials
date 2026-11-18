@@ -29,6 +29,8 @@ jobs:
       - run: npm run check:wslc
       - run: npm run check:access-log
       - run: npm run test:access-log
+      - run: npm run check:security-log
+      - run: npm run test:security-log
       - run: npm run check:monitoring
       - run: npm run test:monitoring
       - run: npm run build
@@ -45,3 +47,23 @@ jobs:
         run: python3 scripts/check-monitoring-compose.py
       - name: Build and test disposable Compose lab
         run: python3 scripts/test-compose-monitoring.py
+  access-log-compose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test Loki, Grafana, Alloy and alert notifications
+        run: python3 -B scripts/test-access-log-compose.py
+  security-log-compose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test authentication, path investigation and notifications
+        run: python3 -B scripts/test-security-log-compose.py

@@ -10,7 +10,9 @@
 
 - [インフラ監視実践入門](docs/monitoring-intro/index.md): Uptime Kuma による動作確認から、通知・遅さ・ログ・容量・CPU/メモリー・通信へ段階的に広げる教材
 
-- [アクセスログ監視入門](docs/access-log-monitoring/index.md): PowerShell と架空のログで、失敗・遅さの集計、時間窓と母数、異常・復旧の判断を学ぶ60〜90分の教材
+- [アクセスログ監視入門](docs/access-log-monitoring/index.md): Loki・Grafana・Alloy で収集・検索・可視化し、失敗・遅さ・ログ途絶のアラートと復旧通知を体験する90〜120分の教材
+
+- [不正アクセス監視入門](docs/security-log-monitoring/index.md): 同じ OSS 構成で認証失敗・404の集中を検知し、誤検知の確認と調査を学ぶ90〜120分の続編
 
 ## 構成と公開URL
 
@@ -44,6 +46,10 @@ npm run check:devcontainer
 npm run check:wslc
 npm run check:access-log
 npm run test:access-log
+npm run test:access-log-compose
+npm run check:security-log
+npm run test:security-log
+npm run test:security-log-compose
 npm run check:monitoring
 npm run test:monitoring
 npm run check:monitoring-compose
@@ -56,7 +62,9 @@ npm run preview
 
 PR では全教材の textlint、教材ごとの静的検査、監視ラボの試験、サイトビルドを実行します。GitHub Pages への公開時も、公開対象のコミットで同じ検証を実行します。
 
-アクセスログ教材の `test:access-log` は PowerShell 7 (`pwsh`) が必要です。配布スクリプトは Windows PowerShell 5.1 でも使用できます。5.1 での検査は `powershell -NoProfile -File scripts/test-access-log.ps1` で実行します。
+アクセスログ教材の受講者には Docker Compose があればよく、PC への言語ランタイムの導入は不要です。開発者向けの `test:access-log`、`package:access-log` は Python 3.10 以降、`test:access-log-compose` はさらに Docker の実行環境が必要です。配布ファイルを変更したら `npm run package:access-log` で Grafana 設定と ZIP を再生成します。
+
+不正アクセス教材も同じ要件です。`npm run package:security-log` で専用の ZIP を再生成します。共通のアクセスログラボの資材を変更した場合は、両方の ZIP を再生成してください。展開後の不正アクセスラボは、前の教材のファイルに依存せず単独で起動できます。
 
 `npm run check` は Biome の検査を実行します。修正も適用する場合は `npm run check:fix` を使います。
 

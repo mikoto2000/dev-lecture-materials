@@ -1,0 +1,27 @@
+local.file_match "access" {
+  path_targets = [{ "__path__" = "/logs/access.jsonl", "job" = "access-log-lab" }]
+  sync_period = "1s"
+}
+
+loki.source.file "access" {
+  targets    = local.file_match.access.targets
+  forward_to = [loki.process.access.receiver]
+}
+
+loki.process "access" {
+  stage.json {
+    expressions = { time = "time" }
+  }
+  stage.timestamp {
+    source            = "time"
+    format            = "RFC3339Nano"
+    action_on_failure = "skip"
+  }
+  forward_to = [loki.write.local.receiver]
+}
+
+loki.write "local" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}

@@ -1,30 +1,62 @@
 # 困ったとき
 
-## ファイルが見つからない
+## Docker につながらない
 
-`Get-Location` と `Get-ChildItem` で場所と名前を確認します。ブラウザーが拡張子に `.txt` を追加した場合は、エクスプローラーで拡張子を表示して直します。2ファイルを同じフォルダーに保存してください。
+Docker Desktop が Linux コンテナーモードで起動しているか、`docker version` の Server が表示されるかを確認します。WSL 2 の Docker Engine を使う場合は、Docker が動いているディストリビューションで実行します。
 
-## スクリプトの実行が禁止されている
+## ポートが使用中と言われる
 
-エディターで配布スクリプトの内容を確認します。組織で実行が制限されている場合は、管理者の指示に従ってください。許可された個人の演習環境では、現在の PowerShell だけに適用する設定を使えます。
+13000番または18780番が競合しています。このラボの `compose.yaml` にあるホスト側のポートだけを変更します。たとえば `127.0.0.1:13001:3000` なら、ブラウザーは13001番で開きます。コンテナー側の3000番や内部 URL は変更しません。
+
+## 起動直後にログイン画面が開かない
+
+初期化を待ち、状態とログを確認します。
 
 ```powershell
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
-Unblock-File -LiteralPath .\Measure-AccessLog.ps1
+docker compose ps --all
+docker compose logs --tail 50 grafana loki alloy
 ```
 
-`Unblock-File` は、内容を確認したこのファイルだけに使います。ウィンドウを閉じると Process の設定は消えます。管理者として起動する必要はありません。グループポリシーの制限が優先される場合は変更できません。
+別のコピーを同時に起動していないかも確認します。この教材の Compose 名は `access-log-lab` で固定しています。
 
-## 日付や JSON のエラーが出る
+## ログが表示されない
 
-終了時刻には `2026-11-18T00:02:00Z` のように、秒とタイムゾーンを付けます。スクリプトは形式が壊れたログを読み飛ばさず、行番号を付けて失敗します。`status` と `request_time_ms` は文字列ではなく数値です。配布ファイルを保存し直して確認してください。
+Explore のデータソースが Loki、時間範囲が Last 15 minutes になっているかを確認します。ラベルは `{job="access-log-lab"}` です。PC の時計のずれも調べます。
 
-## 期待した件数にならない
+```powershell
+docker compose start traffic
+docker compose exec -T demo python /lab/demo.py mode normal
+docker compose exec -T demo tail -n 3 /logs/access.jsonl
+docker compose logs --tail 50 traffic alloy loki
+```
 
-第2章の変数を作り直し、開始以上・終了未満の条件を確認します。付属スクリプトの時間窓は既定で60秒です。`-WindowSeconds` を変えると母数や判定も変わります。
+ファイルに新しい行があるのに Explore に出なければ、Alloy と Loki の間を調べます。ファイルに増えなければ、traffic と demo を先に確認します。古いファイルだけを見て正常と判断しないでください。
 
-## 現在の日時で実行すると NO_DATA になる
+## 解除したのに異常が残る
 
-配布ログは固定した過去のデータです。教材に書かれた `-End` を使ってください。`NO_DATA` は実行の失敗ではなく、指定した窓にリクエストがなかったという結果です。
+クエリーの直近1分には、解除前の異常も残ります。正常なリクエストが増えるまで待ちます。故障モードはボリュームに保存されるため、再起動だけでは解除できません。`mode normal` を実行します。
 
-[教材トップへ戻る](./index.md)
+## Firing なのに通知が見つからない
+
+ルール名と受信時刻を確認します。同じ異常の再通知間隔は1時間です。初回の5秒待機やグループ更新の10秒間隔もあります。
+
+```powershell
+docker compose logs --tail 50 notification-sink grafana
+```
+
+Contact point の URL は `http://notification-sink:8081` です。`localhost` に変更しないでください。通知ログの表示を Ctrl+C で止めても、受信器自体は動いています。
+
+## ルールやダッシュボードを編集できない
+
+配布ファイルから自動登録しているためです。本文では設定を読み、実験します。変更を試す場合は、ダッシュボードをコピーするか、配布設定のコピーで検証してください。
+
+## 完全に初期状態へ戻す
+
+保存データが消えることを確認し、このラボのフォルダーで実行します。
+
+```powershell
+docker compose down --volumes
+docker compose up -d
+```
+
+[教材トップ](./index.md)

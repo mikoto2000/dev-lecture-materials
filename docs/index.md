@@ -22,6 +22,10 @@ hero:
       text: アクセスログ監視入門
       link: /access-log-monitoring/
 
+    - theme: alt
+      text: 不正アクセス監視入門
+      link: /security-log-monitoring/
+
 features:
   - title: Dev Container で構築する開発環境
     details: Docker・Docker Compose の基礎から、Dev Container による開発環境づくりまで学ぶ教材です。
@@ -33,6 +37,9 @@ features:
     details: Uptime Kuma の動作確認から、通知・遅さ・ログ・容量・CPU/メモリー・通信へ観測を足す実践教材です。
     link: /monitoring-intro/
   - title: アクセスログ監視入門
-    details: 架空のログを使い、失敗と遅さの集計から異常・復旧の判定まで学ぶ60〜90分の教材です。
+    details: Loki・Grafana・Alloy でアクセスログを集め、失敗・遅さ・ログ途絶のアラートと復旧通知を体験する教材です。
     link: /access-log-monitoring/
+  - title: 不正アクセス監視入門
+    details: 認証失敗や404の集中を検知し、誤検知の確認と調査につなげるアクセスログ監視の続編です。
+    link: /security-log-monitoring/
 ---

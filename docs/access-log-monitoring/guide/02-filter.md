@@ -1,57 +1,72 @@
-# 2. 時間と条件で絞る
+# 2. LogQL で時間と条件を絞る
 
 ## この章のゴール
 
-「エラーがある」から一歩進めて、いつ、どのパスで、何件起きたかを読み取ります。
+エラーと遅い応答を実際に発生させ、Explore で対象のログを探します。
 
-## JSON として読み出す
+## 先に解除方法を確認する
 
-```powershell
-$logs = @(Get-Content .\access.jsonl -Encoding UTF8 | ForEach-Object {
-    $_ | ConvertFrom-Json
-})
-$logs | Select-Object -First 3 | Format-Table
-```
-
-この小さなログは全件をメモリーに読み込みます。数 GB の本番ログへそのまま使う手順ではありません。
-
-## 時間窓を決める
-
-09:01台に失敗が増えたという報告を想定します。UTC の `00:01:00` 以上、`00:02:00` 未満を選びます。
+異常を解除するコマンドは、いつでも次の1行です。`compose.yaml` のあるフォルダーで実行します。
 
 ```powershell
-$start = [DateTimeOffset]'2026-11-18T00:01:00Z'
-$end = [DateTimeOffset]'2026-11-18T00:02:00Z'
-$window = @($logs | Where-Object {
-    [DateTimeOffset]$_.time -ge $start -and [DateTimeOffset]$_.time -lt $end
-})
-$window.Count
+docker compose exec -T demo python /lab/demo.py mode normal
 ```
 
-結果は `10` 件です。**開始を含み、終了を含まない**区間を使います。これで隣り合う時間窓の境界を重複して数えるのを防げます。
+`python` はコンテナー内で実行するため、PC にインストールする必要はありません。故障モードは再起動後も残ります。異常の実験は1つずつ行い、終わったら `normal` へ戻します。
 
-## 失敗と遅さを別々に探す
+## 5xx を発生させる
 
 ```powershell
-$window | Where-Object { $_.status -ge 500 } |
-    Format-Table time, path, status, request_time_ms, request_id
-
-$window | Where-Object { $_.request_time_ms -ge 1000 } |
-    Format-Table time, path, status, request_time_ms, request_id
-
-$window | Group-Object path | Select-Object Name, Count
+docker compose exec -T demo python /lab/demo.py mode error
 ```
 
-5xx は3件、1000 ms 以上は4件です。`req-015` は HTTP 200 でも1500 ms かかっています。エラーだけを見る監視では、成功した遅いリクエストを見落とします。パス別では `/items` が9件、`/missing` が1件です。
+`/items` が503を返すようになります。自動アクセスは継続しています。Explore の時間範囲を **Last 5 minutes** にし、次の式を実行します。
 
-## 文字列検索との使い分け
+```text
+{job="access-log-lab"} | json | status >= 500 | __error__=""
+```
+
+新しい503の行が見つかれば成功です。少し待ってから **Run query** で更新してください。
+
+| 部分 | 意味 |
+|---|---|
+| `{job="access-log-lab"}` | このラボのログを選ぶ |
+| `| json` | JSON の項目を取り出す |
+| `| status >= 500` | ステータスを数値として比較する |
+| `| __error__=""` | 解析・変換でエラーになった行を除く |
+
+`__error__` のある行を除外すると、壊れたログは件数からも除かれます。本番では、それらが増えていないかを別に監視します。
+
+503の行を1つ開き、時刻・パス・ID を控えます。次の式の ID を、控えた値に置き換えて検索します。
+
+```text
+{job="access-log-lab"} | json | request_id="ここを実際のIDに置き換える"
+```
+
+正常へ戻してから、次の実験へ進みます。
 
 ```powershell
-Select-String -Path .\access.jsonl -Pattern 'req-013'
+docker compose exec -T demo python /lab/demo.py mode normal
 ```
 
-既知の ID を探すときは文字列検索も便利です。ただし、文字列の `500` を探すだけでは処理時間や ID の一部まで一致する場合があります。ステータスの判定には、JSON の `status` フィールドを使います。
+## 200のまま遅い応答を探す
 
-確認: 遅い4件のうち、5xx は何件でしょうか。両方の条件を `-and` で指定すると **3件** になります。2つの件数を足すと同じリクエストを重複して数えるため、注意してください。
+```powershell
+docker compose exec -T demo python /lab/demo.py mode slow
+```
 
-[前へ: 1行を読む](./01-read.md) / [次へ: 件数と割合を比べる](./03-measure.md)
+`/items` の処理で約1.2秒待ちます。ステータスは200のままです。
+
+```text
+{job="access-log-lab"} | json | request_time_ms >= 1000 | __error__=""
+```
+
+1000 ms 以上の200が表示されます。5xx だけを探す式では見つかりません。終わったら `normal` に戻します。
+
+```powershell
+docker compose exec -T demo python /lab/demo.py mode normal
+```
+
+確認: 過去の503が表示されても、現在も故障中とは限りません。右上の時間範囲を絞り、各行の時刻を確認してください。
+
+[前の章: 1行を読む](./01-read.md) / [次の章: 件数と割合を比べる](./03-measure.md)

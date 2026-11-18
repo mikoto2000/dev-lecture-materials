@@ -1,0 +1,7 @@
+apiVersion: 1
+providers:
+  - name: access-log-lab
+    folder: Access Log Lab
+    type: file
+    options:
+      path: /var/lib/grafana/dashboards

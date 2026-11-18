@@ -1,0 +1,153 @@
+{
+  "uid": "security-log-lab",
+  "title": "Security Log Lab",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": false,
+  "timezone": "browser",
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "refresh": "5s",
+  "panels": [
+    {
+      "id": 1,
+      "title": "Requests / 1m",
+      "type": "timeseries",
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(count_over_time({job=\"security-log-lab\"} | json | __error__=\"\" [1m])) or vector(0)",
+          "queryType": "range",
+          "legendFormat": "{{client_ip}} {{account}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 2,
+      "title": "Failed logins / 1m",
+      "type": "timeseries",
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(sum by (client_ip, account) (count_over_time({job=\"security-log-lab\"} | json | __error__=\"\" | event=\"auth\" | outcome=\"failure\" [1m]))) or (0 * sum by (client_ip, account) (count_over_time({job=\"security-log-lab\"} | json | __error__=\"\" | event=\"auth\" [1m])))",
+          "queryType": "range",
+          "legendFormat": "{{client_ip}} {{account}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 3,
+      "title": "HTTP 404 / 1m",
+      "type": "timeseries",
+      "gridPos": {
+        "x": 0,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(sum by (client_ip) (count_over_time({job=\"security-log-lab\"} | json | __error__=\"\" | status = 404 [1m]))) or (0 * sum by (client_ip) (count_over_time({job=\"security-log-lab\"} | json | __error__=\"\" [1m])))",
+          "queryType": "range",
+          "legendFormat": "{{client_ip}} {{account}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 4,
+      "title": "Successful logins / 1m",
+      "type": "timeseries",
+      "gridPos": {
+        "x": 12,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(count_over_time({job=\"security-log-lab\"} | json | __error__=\"\" | event=\"auth\" | outcome=\"success\" [1m])) or vector(0)",
+          "queryType": "range",
+          "legendFormat": "{{client_ip}} {{account}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 5,
+      "title": "Access logs",
+      "type": "logs",
+      "gridPos": {
+        "x": 0,
+        "y": 16,
+        "w": 24,
+        "h": 10
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "{job=\"security-log-lab\"}",
+          "queryType": "range"
+        }
+      ]
+    }
+  ]
+}
