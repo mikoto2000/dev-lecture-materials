@@ -1,11 +1,7 @@
 [
-  { "type": "file", "name": "index", "label": "はじめに" },
-  { "type": "custom-link", "label": "準備と観測の範囲", "link": "/security-log-monitoring/guide/00-prepare" },
-  { "type": "custom-link", "label": "1. 認証失敗の集中", "link": "/security-log-monitoring/guide/01-auth" },
-  { "type": "custom-link", "label": "2. 探索的なアクセス", "link": "/security-log-monitoring/guide/02-paths" },
-  { "type": "custom-link", "label": "3. 誤検知と調査", "link": "/security-log-monitoring/guide/03-triage" },
-  { "type": "custom-link", "label": "4. 運用と後片付け", "link": "/security-log-monitoring/guide/04-review" },
-  "troubleshooting",
-  "facilitator",
-  "references"
+  {
+    "type": "file",
+    "name": "index",
+    "label": "教材全文"
+  }
 ]

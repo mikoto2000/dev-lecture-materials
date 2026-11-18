@@ -18,12 +18,12 @@
 
 - `docs/index.md`: 教材を選ぶ共通トップページ
 - `docs/_nav.json`: 教材間を移動する共通ナビゲーション
-- `docs/<教材ディレクトリ>/`: 教材本文・画像・教材独自の `_meta.json`
-- 教材ごとにサイドバーを分けます。新しい教材は専用ディレクトリに追加してください
-- 既存の `docs/CONTENTS.md` と `docs/コンテナで構築する開発環境/` の各章・画像は同じパスで維持します
+- `docs/<教材ディレクトリ>/index.md`: 教材本文・補足・講師用ガイドをまとめた1つの Markdown
+- 新しい教材は専用ディレクトリの `index.md` に追加し、章は同じファイルの見出しで分けます
+- `docs/CONTENTS.md` は Dev Container 教材の章へのリンク集です。章へのリンクは各教材の `index.md` 内のアンカーを使います
 - リポジトリ名は `dev-lecture-materials`、公開baseは `/dev-lecture-materials/` です
 - 公開教材: https://mikoto2000.github.io/dev-lecture-materials/
-- 改名により旧GitHub Pages URLの `/devcontainer-handson/` は自動転送されません。外部の教材リンクは新しいbaseへ更新してください。各章のbaseより後ろのパスは維持しています
+- 改名により旧GitHub Pages URLの `/devcontainer-handson/` は自動転送されません。外部の教材リンクは新しいbaseへ更新してください。章別の旧URLは、統合後の教材トップと該当章のアンカーへ更新してください
 
 ## 編集・プレビュー
 
@@ -58,7 +58,7 @@ npm run build
 npm run preview
 ```
 
-ビルド時にリンク切れを検査します。教材追加時には共通トップからの導線、教材固有の目次、前後の章へのリンク、既存公開URLも確認してください。
+ビルド時にリンク切れを検査します。教材追加時には共通トップからの導線、教材固有の目次、章へのアンカー、配布資料へのリンクも確認してください。
 
 PR では全教材の textlint、教材ごとの静的検査、監視ラボの試験、サイトビルドを実行します。GitHub Pages への公開時も、公開対象のコミットで同じ検証を実行します。
 
@@ -72,7 +72,7 @@ PR では全教材の textlint、教材ごとの静的検査、監視ラボの�
 
 SQL と PowerShell の例は `docs/public/wslc-postgresql/examples/` に格納し、教材トップからダウンロードできます。教材を読む受講者に Node.js は不要です。
 
-開催前は、講師用ガイドに沿って受講環境で確認してください。[講師用ガイド](docs/wslc-postgresql/facilitator.md)
+開催前は、講師用ガイドに沿って受講環境で確認してください。[講師用ガイド](docs/wslc-postgresql/index.md#facilitator)
 
 ## インフラ監視教材の実験用ファイル
 
@@ -80,6 +80,6 @@ SQL と PowerShell の例は `docs/public/wslc-postgresql/examples/` に格納�
 
 自作の `monitor.py` / `watchdog.py` は任意の補足です。本編の監視には使用しません。
 
-章の表示順は `docs/monitoring-intro/_meta.json` で管理します。ファイル名は公開 URL の維持に使うため、表示順と異なる場合があります。たとえば `07-watchdog.md` は第10章です。
+章の順番は各教材の `index.md` 内で管理します。`_meta.json` は教材全文へのリンクを定義します。
 
 `npm run test:monitoring` は Python 3.10 以降が必要です。`check:monitoring-compose` は Docker CLI と Compose（v2 または v5）、`test:monitoring-compose` は Docker の実行環境も必要です。後者は試験専用のプロジェクトとボリュームを作成し、終了時に削除します。

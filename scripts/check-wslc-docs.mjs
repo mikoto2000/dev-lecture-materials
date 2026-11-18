@@ -1,53 +1,21 @@
 import assert from 'node:assert/strict';
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
+import { checkCourseDocs } from './check-course-docs.mjs';
 import { parseArgs } from 'node:util';
 
 const docs = path.resolve('docs');
 const root = path.join(docs, 'wslc-postgresql');
-const files = [];
-function walk(directory) {
-  for (const entry of readdirSync(directory, { withFileTypes: true })) {
-    const file = path.join(directory, entry.name);
-    if (entry.isDirectory()) walk(file);
-    else if (file.endsWith('.md')) files.push(file);
-  }
-}
-walk(root);
-assert.equal(files.length, 10, 'Expected ten workshop pages');
-for (const file of files) {
-  const text = readFileSync(file, 'utf8');
-  assert.equal((text.match(/^```/gm) || []).length % 2, 0, `${file}: unclosed fence`);
-  for (const match of text.matchAll(/\]\(([^)#]+)(?:#[^)]*)?\)/g)) {
-    const target = match[1];
-    if (/^(https?:|mailto:)/.test(target)) continue;
-    const local = target.startsWith('/')
-      ? path.join(docs, 'public', target)
-      : path.resolve(path.dirname(file), target);
-    assert.ok(existsSync(local), `${file}: missing ${target}`);
-  }
-  for (const match of text.matchAll(/href="\.\/([^"]+)"/g)) {
-    const routeDirectory = path.dirname(path.relative(docs, file));
-    const asset = path.join(docs, 'public', routeDirectory, match[1]);
-    const local = path.resolve(path.dirname(file), match[1]);
-    assert.ok(existsSync(asset) || existsSync(local), `${file}: missing ${match[1]}`);
-  }
-}
-const metadata = JSON.parse(readFileSync(path.join(root, '_meta.json'), 'utf8'));
-for (const item of metadata) {
-  const target = typeof item === 'string' ? path.join(root, `${item}.md`)
-    : item.type === 'custom-link' ? path.join(docs, `${item.link}.md`)
-      : path.join(root, `${item.name}.md`);
-  assert.ok(existsSync(target), `Sidebar target missing: ${target}`);
-}
+const files = [path.join(root, 'index.md')];
+checkCourseDocs('wslc-postgresql', ['guide-01-prepare', 'guide-02-start', 'guide-03-sql',
+  'guide-04-persist', 'guide-05-connect', 'guide-06-cleanup', 'troubleshooting', 'facilitator', 'references']);
 const commandSheet = path.join(docs, 'public/wslc-postgresql/examples/commands.ps1.txt');
 const sources = new Map([...files, commandSheet].map(file => [file, readFileSync(file, 'utf8')]));
 const allText = [...sources.values()].join('\n');
 assert.ok(!/^\s*wslc .*\bprune\b/m.test(allText), 'Broad prune command found');
 assert.ok(!/postgres:(?:latest|18)\b/.test(allText), 'PostgreSQL version drift');
 const requiredSources = new Set([
-  path.join(root, 'guide/02-start.md'),
-  path.join(root, 'guide/04-persist.md'),
+  path.join(root, 'index.md'),
   commandSheet,
 ]);
 for (const [file, text] of sources) {

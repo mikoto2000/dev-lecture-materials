@@ -605,6 +605,6 @@ Compose の CI は、固定版イメージの起動、サービス名による�
 
 Kuma の GUI、ソース確認、Compose の構文検証、実際のコンテナー実行を、それぞれ実施した範囲で説明します。
 
-自作監視器は[補足](../docs/monitoring-intro/appendix-custom-checker.md)へ移しました。補足スクリプトの試験成功だけで、Kuma の設定や Compose 全体が検証済みとは扱いません。
+自作監視器は[補足](../docs/monitoring-intro/index.md#appendix-custom-checker)へ移しました。補足スクリプトの試験成功だけで、Kuma の設定や Compose 全体が検証済みとは扱いません。
 
 [教材トップ](../docs/monitoring-intro/index.md)
