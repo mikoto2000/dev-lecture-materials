@@ -12,6 +12,7 @@
     "textlint": "textlint ./docs",
     "preview": "rspress preview",
     "package:log-analysis": "node scripts/package-log-analysis.mjs",
+    "check:log-analysis": "node scripts/check-log-analysis-docs.mjs",
     "test:log-analysis": "node scripts/test-log-analysis.mjs",
     "check:devcontainer": "node scripts/check-devcontainer-docs.mjs",
     "check:wslc": "node scripts/check-wslc-docs.mjs",

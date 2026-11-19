@@ -51,6 +51,7 @@ npm run test:access-log
 npm run test:access-log-compose
 npm run check:security-log
 npm run test:log-analysis
+npm run check:log-analysis
 npm run test:security-log
 npm run test:security-log-compose
 npm run check:monitoring

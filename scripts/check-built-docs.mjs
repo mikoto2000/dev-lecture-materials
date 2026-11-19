@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFileSync, readdirSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { runInNewContext } from 'node:vm';
 
@@ -33,7 +33,10 @@ for (const [route, target] of Object.entries(routes)) {
   }
 }
 
-for (const course of new Set(Object.values(routes).map(target => target.split('/')[0]))) {
+const courses = readdirSync('docs', { withFileTypes: true })
+  .filter(entry => entry.isDirectory() && existsSync(path.join('docs', entry.name, 'index.md')))
+  .map(entry => entry.name);
+for (const course of courses) {
   const html = readFileSync(path.join(output, course, 'index.html'), 'utf8');
   const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
   assert.equal(new Set(ids).size, ids.length, `${course}: duplicate HTML ID`);

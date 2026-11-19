@@ -3,7 +3,7 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 
 // Every course is a single document; downloads remain in docs/public.
-export function checkCourseDocs(course, sections) {
+export function checkCourseDocs(course, sections, { topAnchor = true } = {}) {
   const docs = path.resolve('docs');
   const root = path.join(docs, course);
   const file = path.join(root, 'index.md');
@@ -14,7 +14,7 @@ export function checkCourseDocs(course, sections) {
   const prose = text.replace(/^```[^\n]*\n[\s\S]*?^```[^\n]*$/gm, '');
   assert.equal((prose.match(/^# /gm) ?? []).length, 1, `${course}: expected one document title`);
   const anchors = [...prose.matchAll(/<a id="([^"]+)"><\/a>/g)].map(match => match[1]);
-  assert.deepEqual(anchors, ['top', ...sections], `${course}: chapter order or anchors changed`);
+  assert.deepEqual(anchors, [...(topAnchor ? ['top'] : []), ...sections], `${course}: chapter order or anchors changed`);
   assert.equal(new Set(anchors).size, anchors.length, `${course}: duplicate anchor`);
   const metadata = JSON.parse(readFileSync(path.join(root, '_meta.json'), 'utf8'));
   assert.deepEqual(metadata, [{ type: 'file', name: 'index', label: '教材全文' }]);
