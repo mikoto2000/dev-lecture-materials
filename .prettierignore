@@ -2,3 +2,11 @@
 package-lock.json
 pnpm-lock.yaml
 yarn.lock
+
+# Generated resources are synchronized by the packaging scripts.
+docs/public/**/grafana/provisioning/**/*.json
+docs/public/**/grafana/dashboards/**/*.json
+docs/public/access-log-analysis/lesson.md
+docs/public/access-log-analysis/samples.js
+docs/public/access-log-analysis/samples/*.jsonl
+docs/public/**/*.zip
