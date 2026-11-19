@@ -7,7 +7,7 @@ const actions = {
   'test-compose': [['scripts/test-access-log-compose.py']],
   'security-package': [['scripts/security_log_config.py'], ['scripts/package-security-log-lab.py']],
   'security-check-package': [['scripts/security_log_config.py', '--check'], ['scripts/package-security-log-lab.py', '--check'], ['scripts/test-security-log-assets.py']],
-  'security-test': [['scripts/test-security-log.py']],
+  'security-test': [['scripts/test-security-log.py'], ['scripts/test-security-log-compose-config.py']],
   'security-test-compose': [['scripts/test-security-log-compose.py']],
 };
 const action = process.argv[2];
