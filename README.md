@@ -23,7 +23,7 @@
 - `docs/CONTENTS.md` は Dev Container 教材の章へのリンク集です。章へのリンクは各教材の `index.md` 内のアンカーを使います
 - リポジトリ名は `dev-lecture-materials`、公開baseは `/dev-lecture-materials/` です
 - 公開教材: https://mikoto2000.github.io/dev-lecture-materials/
-- 改名により旧GitHub Pages URLの `/devcontainer-handson/` は自動転送されません。外部の教材リンクは新しいbaseへ更新してください。章別の旧URLは、統合後の教材トップと該当章のアンカーへ更新してください
+- 改名により旧GitHub Pages URLの `/devcontainer-handson/` は自動転送されません。外部の教材リンクは新しいbaseへ更新してください。統合前の章別URLは、公開サイト上で各教材の該当章へ転送します。新しいリンクには教材トップと該当章のアンカーを使ってください
 
 ## 編集・プレビュー
 
@@ -58,7 +58,7 @@ npm run build
 npm run preview
 ```
 
-ビルド時にリンク切れを検査します。教材追加時には共通トップからの導線、教材固有の目次、章へのアンカー、配布資料へのリンクも確認してください。
+ビルド時にリンク切れを検査します。`scripts/legacy-routes.json` に定義した旧章 URL の転送 HTML を生成し、転送先の章と HTML の ID 重複も検査します。教材追加時には共通トップからの導線、教材固有の目次、章へのアンカー、配布資料へのリンクも確認してください。
 
 PR では全教材の textlint、教材ごとの静的検査、監視ラボの試験、サイトビルドを実行します。GitHub Pages への公開時も、公開対象のコミットで同じ検証を実行します。
 
