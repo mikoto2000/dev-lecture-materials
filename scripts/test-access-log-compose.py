@@ -95,6 +95,28 @@ def run_test():
             assert query(STREAM)[0]['values']
             dashboard = api('/api/dashboards/uid/access-log-lab')['dashboard']
             assert len(dashboard['panels']) == 5
+            # Valid JSON can still fail numeric label conversion. Exercise Loki,
+            # not only the generated query text, to guard the filter ordering.
+            compose('exec', '-T', 'demo', 'python', '-c', '''
+from datetime import datetime, timezone
+import json
+from pathlib import Path
+
+rows = [
+    {'status': 'invalid', 'request_time_ms': 1, 'request_id': 'invalid-status'},
+    {'status': 200, 'request_time_ms': 'invalid', 'request_id': 'invalid-duration'},
+]
+with Path('/logs/access.jsonl').open('a') as output:
+    for row in rows:
+        row.update(time=datetime.now(timezone.utc).isoformat(), method='GET', path='/items')
+        output.write(json.dumps(row) + '\\n')
+''')
+            invalid_rows = ('sum(count_over_time(' + STREAM +
+                            ' | json | request_id=~"invalid-(status|duration)" [1m]))')
+            wait('invalid numeric fields collected', lambda: scalar(invalid_rows) == 2)
+            assert scalar(RATE) == 0, 'Invalid status must be excluded after numeric conversion'
+            assert scalar(SLOW) == 0, 'Invalid duration must be excluded after numeric conversion'
+            print('PASS: numeric conversion errors excluded from metric queries', flush=True)
             wait('normal error rule', lambda: state('Access errors') == 'inactive')
             mode('error')
             wait('5xx alert query crosses threshold', lambda: scalar(ERROR_ALERT) == 1)

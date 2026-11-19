@@ -150,9 +150,13 @@ Firing と、同じ `alertname` の `firing` 通知を確認します。通知�
 docker compose exec -T demo python /lab/security_demo.py mode normal
 ```
 
-正常な認証を再開すると、直近1分の失敗が減り、Normal と `resolved` 通知を確認できます。配布クエリーは同じ組の認証イベントがある間、失敗がない場合に0を補います。データ自体が来ない場合は Keep Last State とし、**Security logs missing** で別に検知します。
+正常な認証を再開すると、直近1分の失敗が減り、Normal と `resolved` 通知を確認できます。配布クエリーは同じ組の認証イベントがある間、失敗がない場合に0を補います。
 
-`resolved` はこの条件を下回ったという意味です。第三者が侵入していない、被害がない、と確認できた意味ではありません。
+認証の集計結果がすべて空になると **No Data** です。このルールは **Keep Last State** で直前の状態を保ちます。**Security logs missing** は、認証以外も含む有効なログ全体の件数を調べます。直近1分が0件なら異常と判定します。通常のアクセスログが続き、認証イベントだけが途絶した場合は、この途絶ルールでは検知できません。
+
+一部の組だけが消え、別の組の認証イベントが続く場合は **MissingSeries** です。消えた組の警報は、一定回数の評価後に Normal へ移り、発火中なら `resolved` 通知が出ます。Keep Last State による全系列の No Data の扱いとは異なります。警報の履歴で `grafana_state_reason` が `MissingSeries` かを確認します。
+
+`resolved` は条件を下回った場合にも、系列が消失した場合にも届きます。第三者が侵入していない、被害がない、と確認できた意味ではありません。実運用では、送信元やアカウントごとの観測が途絶した場合の確認方法も決めます。
 
 <a id="guide-02-paths"></a>
 
@@ -224,7 +228,9 @@ docker compose exec -T demo python /lab/security_demo.py mode typo
 
 件数が増えると、前の章と同じ **Repeated missing paths** が Firing になります。通知はルールどおりに出ていますが、それだけでは探索行為と判断できません。
 
-第2章の式でパス別に集計します。以前の実験の行が混ざる場合は、切り替え後1分以上待つか、Explore の絶対時刻をシナリオの時間帯へ絞ります。
+第2章の式でパス別に集計します。切り替え時刻を控え、2分以上待ってから、Explore の時間範囲を絶対時刻で「開始: 切り替えの1分後」「終了: 現在時刻」に設定して再実行します。各評価時刻の直前1分を集計するため、開始時刻も1分後にずらして前のシナリオを除きます。
+
+Last 15 minutes のままでは、待つだけで過去の scan の集計結果がグラフから消えるわけではありません。現在時点の直近1分と、グラフ全体の表示範囲を区別します。
 
 | 比較する情報 | scan のシナリオ | typo のシナリオ |
 |---|---|---|
@@ -338,7 +344,7 @@ demo と traffic は同じシナリオ設定を参照します。再起動後も
 
 normal の自動アクセスでは、数秒ごとに同じアカウントの認証成功を記録します。traffic が動いているか、同じ `client_ip` と `account` の新しい認証イベントがあるかを確認します。
 
-データが途絶しただけでは Keep Last State で直前の状態を保ちます。正常な認証を観測したことと、何も観測できないことは別です。Security logs missing も確認してください。
+認証の集計結果がすべて空なら、Keep Last State で直前の状態を保ちます。一部の組だけが消えた場合は MissingSeries として復旧通知が出ることもあります。正常な認証を観測したことと、何も観測できないことは別です。Security logs missing はログ全体の途絶を検知するため、認証イベントだけの途絶も別に確認してください。
 
 ### 通知の送信元 IP が例と異なる
 
@@ -376,7 +382,7 @@ scan と typo のどちらも同じ警報を出すことが、この教材の重
 - 401は認証以外の実装やプロキシでも返り得る。アプリが何を判定したかは認証イベントで確かめる
 - 集計で対象を絞れるが、IP やアカウントを分散する試行は別の軸で見る必要がある
 - 件数だけではパスの分布や変更履歴が分からず、行動の意味を判断できないため
-- resolved は検知条件を外れたこと。認証成功の正当性や被害の確認は別の調査
+- resolved は検知条件を外れた場合や系列が消失した場合に届く。認証成功の正当性や被害の確認は別の調査
 - 正規利用者への影響、根拠、範囲、通知先、解除条件を先に確認する
 
 ### 開発者向けの検査
@@ -394,4 +400,5 @@ scan と typo のどちらも同じ警報を出すことが、この教材の重
 - [LogQL のログ検索](https://grafana.com/docs/loki/latest/query/log_queries/): JSON の解析とフィルター
 - [LogQL の集計](https://grafana.com/docs/loki/latest/query/metric_queries/): 時間窓と集計の軸
 - [Grafana Alerting](https://grafana.com/docs/grafana/latest/alerting/): アラートの状態と通知
+- [Grafana のデータ欠損の扱い](https://grafana.com/docs/grafana/latest/alerting/guides/missing-data/): No Data と MissingSeries の違い
 - [アクセスログ監視入門](../access-log-monitoring/index.md): この教材の前提となる収集・検索・通知

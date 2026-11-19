@@ -30,7 +30,7 @@
               },
               "model": {
                 "refId": "A",
-                "expr": "((100 * (sum(count_over_time({job=\"access-log-lab\"} | json | __error__=\"\" | status >= 500 [1m])) or vector(0)) / sum(count_over_time({job=\"access-log-lab\"} | json | __error__=\"\" [1m]))) >= bool 20) and (sum(count_over_time({job=\"access-log-lab\"} | json | __error__=\"\" [1m])) >= 10)",
+                "expr": "((100 * (sum(count_over_time({job=\"access-log-lab\"} | json | __error__=\"\" | status >= 500 | __error__=\"\" [1m])) or vector(0)) / sum(count_over_time({job=\"access-log-lab\"} | json | __error__=\"\" [1m]))) >= bool 20) and (sum(count_over_time({job=\"access-log-lab\"} | json | __error__=\"\" [1m])) >= 10)",
                 "queryType": "instant",
                 "instant": true,
                 "intervalMs": 1000,
@@ -105,7 +105,7 @@
               },
               "model": {
                 "refId": "A",
-                "expr": "((sum(count_over_time({job=\"access-log-lab\"} | json | __error__=\"\" | request_time_ms >= 1000 [1m])) or vector(0)) >= bool 3) and (sum(count_over_time({job=\"access-log-lab\"} | json | __error__=\"\" [1m])) >= 10)",
+                "expr": "((sum(count_over_time({job=\"access-log-lab\"} | json | __error__=\"\" | request_time_ms >= 1000 | __error__=\"\" [1m])) or vector(0)) >= bool 3) and (sum(count_over_time({job=\"access-log-lab\"} | json | __error__=\"\" [1m])) >= 10)",
                 "queryType": "instant",
                 "instant": true,
                 "intervalMs": 1000,

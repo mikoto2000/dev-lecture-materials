@@ -276,10 +276,12 @@ sum(count_over_time({job="access-log-lab"} | json | __error__="" [1m]))
 
 ```text
 100 *
-(sum(count_over_time({job="access-log-lab"} | json | __error__="" | status >= 500 [1m])) or vector(0))
+(sum(count_over_time({job="access-log-lab"} | json | status >= 500 | __error__="" [1m])) or vector(0))
 /
 sum(count_over_time({job="access-log-lab"} | json | __error__="" [1m]))
 ```
+
+`__error__=""` は数値比較の後に置きます。JSON の解析だけでなく、`status` の数値変換で発生したエラーも除外するためです。変換エラーが残ると、Loki のメトリクスクエリーは失敗します。配布設定の遅い件数も、数値比較の後でエラーを除きます。
 
 4xx は母数に入りますが、5xx の件数には入りません。404がある正常時でも、5xx 率は0%です。これを「すべての操作が成功した」と読み替えないでください。
 

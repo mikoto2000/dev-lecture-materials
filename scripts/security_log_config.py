@@ -13,7 +13,7 @@ AUTH_ALL = f'sum by (client_ip, account) (count_over_time({VALID} | event="auth"
 AUTH_FAIL = f'sum by (client_ip, account) (count_over_time({VALID} | event="auth" | outcome="failure" [1m]))'
 FAILURES = f'({AUTH_FAIL}) or (0 * {AUTH_ALL})'
 CLIENT_ALL = f'sum by (client_ip) (count_over_time({VALID} [1m]))'
-CLIENT_404 = f'sum by (client_ip) (count_over_time({VALID} | status = 404 [1m]))'
+CLIENT_404 = f'sum by (client_ip) (count_over_time({VALID} | status = 404 | __error__="" [1m]))'
 NOT_FOUND = f'({CLIENT_404}) or (0 * {CLIENT_ALL})'
 
 

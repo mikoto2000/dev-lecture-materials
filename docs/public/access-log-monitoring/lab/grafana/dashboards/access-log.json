@@ -56,7 +56,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "100 * (sum(count_over_time({job=\"access-log-lab\"} | json | __error__=\"\" | status >= 500 [1m])) or vector(0)) / sum(count_over_time({job=\"access-log-lab\"} | json | __error__=\"\" [1m]))",
+          "expr": "100 * (sum(count_over_time({job=\"access-log-lab\"} | json | __error__=\"\" | status >= 500 | __error__=\"\" [1m])) or vector(0)) / sum(count_over_time({job=\"access-log-lab\"} | json | __error__=\"\" [1m]))",
           "queryType": "range"
         }
       ],
@@ -84,7 +84,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "(sum(count_over_time({job=\"access-log-lab\"} | json | __error__=\"\" | request_time_ms >= 1000 [1m])) or vector(0))",
+          "expr": "(sum(count_over_time({job=\"access-log-lab\"} | json | __error__=\"\" | request_time_ms >= 1000 | __error__=\"\" [1m])) or vector(0))",
           "queryType": "range"
         }
       ],
