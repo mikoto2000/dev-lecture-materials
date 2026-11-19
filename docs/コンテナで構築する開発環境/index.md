@@ -16,7 +16,7 @@ Docker・Docker Compose の基礎から、Dev Container を使った開発環境
 
 <a id="introduction"></a>
 
-## INTRODUCTION
+## イントロダクション
 
 ### Description
 

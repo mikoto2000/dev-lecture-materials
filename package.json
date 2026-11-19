@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "rspress build",
+    "build": "rspress build && node scripts/build-legacy-redirects.mjs && node scripts/check-built-docs.mjs",
     "check": "biome check",
     "check:fix": "biome check --write",
     "dev": "rspress dev",
