@@ -14,6 +14,8 @@
 
 - [不正アクセス監視入門](docs/security-log-monitoring/index.md): 同じ OSS 構成で認証失敗・404の集中を検知し、誤検知の確認と調査を学ぶ90〜120分の続編
 
+- [アクセスログ分析入門 - 不正アクセス検知編](docs/access-log-analysis/index.md): サンプルログをブラウザーで分析し、演習と解説で検知・誤検知・追加調査を学ぶ90〜120分の教材。オフライン用ZIP付き
+
 ## 構成と公開URL
 
 - `docs/index.md`: 教材を選ぶ共通トップページ
@@ -48,6 +50,7 @@ npm run check:access-log
 npm run test:access-log
 npm run test:access-log-compose
 npm run check:security-log
+npm run test:log-analysis
 npm run test:security-log
 npm run test:security-log-compose
 npm run check:monitoring
@@ -67,6 +70,8 @@ PR では全教材の textlint、教材ごとの静的検査、監視ラボの�
 不正アクセス教材も同じ要件です。`npm run package:security-log` で専用の ZIP を再生成します。共通のアクセスログラボの資材を変更した場合は、両方の ZIP を再生成してください。展開後の不正アクセスラボは、前の教材のファイルに依存せず単独で起動できます。
 
 `npm run check` は Biome の検査を実行します。修正も適用する場合は `npm run check:fix` を使います。
+
+アクセスログ分析教材の受講者にはブラウザーだけが必要です。`npm run package:log-analysis` はJSONL・内蔵サンプル・オフライン本文・ZIPを再生成します（開発者にはPython 3も必要）。変更後は `npm run test:log-analysis` で演習の件数と配布物を検証します。
 
 ## wslc 教材の配布資料
 

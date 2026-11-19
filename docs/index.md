@@ -26,7 +26,14 @@ hero:
       text: 不正アクセス監視入門
       link: /security-log-monitoring/
 
+    - theme: alt
+      text: アクセスログ分析入門 - 不正アクセス検知編
+      link: /access-log-analysis/
+
 features:
+  - title: アクセスログ分析入門 - 不正アクセス検知編
+    details: ブラウザーで架空のログを分析し、不審なアクセスの根拠、誤検知の可能性、追加調査を考える90〜120分の教材です。
+    link: /access-log-analysis/
   - title: Dev Container で構築する開発環境
     details: Docker・Docker Compose の基礎から、Dev Container による開発環境づくりまで学ぶ教材です。
     link: /コンテナで構築する開発環境/

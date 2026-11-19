@@ -33,5 +33,10 @@
     "text": "アクセス解析",
     "link": "/privacy",
     "activeMatch": "^/privacy(?:\\.html)?$"
+  },
+  {
+    "text": "アクセスログ分析",
+    "link": "/access-log-analysis/",
+    "activeMatch": "^/access-log-analysis/"
   }
 ]

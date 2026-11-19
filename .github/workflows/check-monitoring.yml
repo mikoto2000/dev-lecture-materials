@@ -30,6 +30,7 @@ jobs:
       - run: npm run check:access-log
       - run: npm run test:access-log
       - run: npm run check:security-log
+      - run: npm run test:log-analysis
       - run: npm run test:security-log
       - run: npm run check:monitoring
       - run: npm run test:monitoring

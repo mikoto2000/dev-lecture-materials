@@ -1,0 +1,30 @@
+:root { color-scheme: light; font-family: system-ui, sans-serif; color: #172d3e; background: #edf3f6; line-height: 1.65; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+header { background: #112f42; color: #fff; padding: 2.5rem max(5vw, calc((100vw - 1200px) / 2)); border-bottom: 5px solid #39c4ae; }
+h1 { font-size: clamp(1.6rem, 4vw, 2.4rem); margin: .4rem 0; }
+h2 { font-size: 1.2rem; margin-top: 0; }
+.eyebrow { color: #88e5d4; font-size: .8rem; letter-spacing: .14em; }
+main { max-width: 1280px; padding: 1.5rem; margin: auto; }
+section, aside { background: #fff; padding: 1.5rem; border: 1px solid #d3dfe7; border-radius: 10px; margin-bottom: 1.25rem; }
+.controls { display: flex; flex-wrap: wrap; align-items: end; gap: 1rem; }
+label { display: grid; gap: .3rem; font-size: .88rem; font-weight: 600; max-width: 100%; }
+input, select, button { font: inherit; border-radius: 5px; border: 1px solid #8ca1b0; padding: .6rem; max-width: 100%; }
+input, select { background: #fff; color: #172d3e; }
+button { background: #086c63; color: white; cursor: pointer; font-weight: 600; }
+button:hover { background: #064f49; }
+.secondary { background: #fff; color: #172d3e; }
+.secondary:hover { background: #edf3f6; }
+:focus-visible { outline: 3px solid #0068c7; outline-offset: 3px; }
+.actions { display: flex; gap: 1rem; margin-top: 1rem; }
+.table-wrap { overflow: auto; margin: 1.25rem 0; max-height: 32rem; }
+table { border-collapse: collapse; font-size: .85rem; width: 100%; text-align: left; }
+caption { text-align: left; padding: .6rem 0; font-weight: 600; }
+th, td { padding: .65rem; border-bottom: 1px solid #dce5eb; vertical-align: top; overflow-wrap: anywhere; min-width: 6rem; }
+th { background: #e9f1f5; position: sticky; top: 0; }
+tr:nth-child(even) { background: #f7fafb; }
+pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+#load-status, #result-status { font-weight: 600; }
+aside { border-left: 5px solid #086c63; }
+footer { text-align: center; padding: 1rem; color: #496375; }
+@media (max-width: 600px) { main { padding: .75rem; } section { padding: 1rem; } .controls > label { width: 100%; } }

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'none'; img-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>アクセスログ分析ラボ</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="core.js"></script>
+  <script defer src="samples.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <header><p class="eyebrow">ACCESS LOG LAB / 入門演習</p><h1>アクセスログ分析ラボ</h1><p>ログを絞り、比べ、判断の根拠を見つける。</p></header>
+  <main>
+    <section aria-labelledby="load-title"><h2 id="load-title">1. ログを選ぶ</h2>
+      <p>処理はこのブラウザー内で完結します。外部送信・自動保存はありません。学習用の架空ログを使ってください。</p>
+      <div class="controls"><label>サンプル<select id="sample"><option value="baseline">01 正常時</option><option value="guided">02 ガイド演習</option><option value="challenge">03 総合演習</option></select></label><button id="load" type="button">サンプルを読み込む</button><label>JSONLファイル（2 MiB以下）<input id="file" type="file" accept=".jsonl,.ndjson,.txt"></label></div>
+      <p id="load-status" role="status" aria-live="polite"></p><details id="parse-errors"><summary>形式エラーの行</summary><pre id="errors"></pre></details>
+    </section>
+    <section aria-labelledby="filter-title"><h2 id="filter-title">2. 条件で絞る</h2>
+      <p>すべてUTCです。開始を含み、終了を含みません。空欄は全件。条件を変えたら「集計する」を押します。</p>
+      <form id="filters"><div class="controls">
+        <label>開始（UTC）<input id="start" type="datetime-local" step="1"></label><label>終了（UTC）<input id="end" type="datetime-local" step="1"></label>
+        <label>送信元IP（完全一致）<input id="ip" placeholder="例: 203.0.113.10"></label><label>パス（部分一致・大小区別）<input id="path" placeholder="例: /login"></label>
+        <label>HTTPステータス<input id="status" type="number" min="100" max="599" placeholder="例: 404"></label>
+        <label>イベント<select id="event"><option value="">すべて</option><option value="access">access</option><option value="auth">auth</option></select></label>
+        <label>認証結果<select id="outcome"><option value="">すべて</option><option value="failure">failure</option><option value="success">success</option></select></label>
+        <label>集計単位<select id="group"><option value="minute">1分ごと</option><option value="client_ip">送信元IP</option><option value="path">パス</option><option value="status">HTTPステータス</option><option value="account">アカウント</option><option value="outcome">認証結果</option><option value="user_agent">User-Agent</option></select></label>
+      </div><div class="actions"><button type="submit">集計する</button><button id="reset-filters" type="button" class="secondary">条件をリセット</button></div></form>
+    </section>
+    <section aria-labelledby="result-title"><h2 id="result-title">3. 分布と明細を読む</h2><p id="result-status" role="status" aria-live="polite"></p>
+      <div class="table-wrap"><table><caption>集計結果（1分ごとは時刻順、それ以外は件数順・上位500行）</caption><thead><tr><th>値</th><th>件数</th><th>4xx・5xx件数</th><th>認証失敗</th><th>パス種類数</th><th>最初（UTC）</th><th>最後（UTC）</th></tr></thead><tbody id="summary"></tbody></table></div>
+      <div class="table-wrap"><table><caption>ログ明細（時刻順・先頭500件）</caption><thead><tr><th>時刻（UTC）</th><th>送信元IP</th><th>メソッド</th><th>パス</th><th>HTTP</th><th>イベント</th><th>アカウント</th><th>認証結果</th><th>User-Agent</th><th>要求ID</th></tr></thead><tbody id="rows"></tbody></table></div>
+    </section>
+    <aside><strong>判断の前に</strong><p>件数やIPだけで攻撃と断定できません。User-Agentは自己申告です。認証成功の正当性や被害は、別のログ・運用情報で確認します。読み込んだ内容は再読み込みで消えます。</p></aside>
+  </main><footer>架空の演習データ / UTC / 外部ライブラリー不要</footer>
+</body>
+</html>
