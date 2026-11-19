@@ -11,6 +11,7 @@ import uuid
 import zipfile
 
 from security_log_config import FAILURES, NOT_FOUND, STREAM, TOTAL
+from security_log_compose import check
 
 ROOT = Path(__file__).resolve().parents[1]
 ARCHIVE = ROOT / 'docs/public/security-log-monitoring/security-log-lab.zip'
@@ -21,6 +22,7 @@ def main():
         with zipfile.ZipFile(ARCHIVE) as archive:
             archive.extractall(directory)
         lab = Path(directory) / 'security-log-lab'
+        check(lab)
         file = lab / 'compose.yaml'
         file.write_text(file.read_text().replace('127.0.0.1:13010:3000', '127.0.0.1:0:3000')
                         .replace('127.0.0.1:18790:8080', '127.0.0.1:0:8080'))
