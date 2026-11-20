@@ -42,6 +42,7 @@ npm run dev
 
 ```bash
 npm run lint
+npm run test:course-links
 npx tsc --noEmit
 npm run textlint
 npm run check:devcontainer

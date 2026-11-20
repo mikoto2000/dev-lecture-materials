@@ -23,6 +23,7 @@ jobs:
           python-version: '3.12'
       - run: npm ci
       - run: npm run lint
+      - run: npm run test:course-links
       - run: npx tsc --noEmit
       - run: npm run textlint
       - run: npm run check:devcontainer
