@@ -22,6 +22,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: npm ci
+      - run: npm run check
       - run: npm run lint
       - run: npm run test:course-links
       - run: npx tsc --noEmit

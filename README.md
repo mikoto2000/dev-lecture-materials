@@ -41,6 +41,7 @@ npm run dev
 一連の検証は Linux で実行します。Windows では、Docker Engine を利用できる WSL 2 の Ubuntu を開き、その中で `npm ci` を実行してから進めてください。Python ラボの実行テストもこの Linux 環境を使います。
 
 ```bash
+npm run check
 npm run lint
 npm run test:course-links
 npx tsc --noEmit
@@ -71,7 +72,9 @@ PR では全教材の textlint、教材ごとの静的検査、監視ラボの�
 
 不正アクセス教材も同じ要件です。`npm run package:security-log` で専用の ZIP を再生成します。共通のアクセスログラボの資材を変更した場合は、両方の ZIP を再生成してください。展開後の不正アクセスラボは、前の教材のファイルに依存せず単独で起動できます。
 
-`npm run check` は Biome の検査を実行します。修正も適用する場合は `npm run check:fix` を使います。
+`npm run check` は JavaScript・TypeScript・JSON・CSS の Biome 検査を実行し、整形と import 順序も CI で確認します。修正も適用する場合は `npm run check:fix` を使います。配布資産の `docs/public/` と lockfile は対象外です。配布資産の整合性は各教材の生成・一致検査で確認します。
+
+`npm run format` は Markdown・MDX 用の Prettier による手動整形です。生成済みの配布用本文は `.prettierignore` で除外します。コードの整形は Biome に統一し、同じファイルへ両方の整形ツールを適用しません。本文の CI 検査には textlint と教材ごとの静的検査を使います。
 
 アクセスログ分析教材の受講者にはブラウザーだけが必要です。`npm run package:log-analysis` はJSONL・内蔵サンプル・オフライン本文・ZIPを再生成します（開発者にはPython 3も必要）。変更後は `npm run test:log-analysis` で演習の件数と配布物を検証します。
 

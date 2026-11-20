@@ -1,5 +1,8 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.8.0/schema.json",
+  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "files": {
+    "ignore": ["docs/public/**", "package-lock.json"]
+  },
   "organizeImports": {
     "enabled": true
   },
@@ -21,6 +24,17 @@
       "cssModules": true
     }
   },
+  "overrides": [
+    {
+      "include": [".devcontainer/*.json"],
+      "json": {
+        "parser": {
+          "allowComments": true,
+          "allowTrailingCommas": true
+        }
+      }
+    }
+  ],
   "linter": {
     "enabled": true,
     "rules": {
