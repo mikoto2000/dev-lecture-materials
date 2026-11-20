@@ -9,6 +9,7 @@
     "dev": "rspress dev",
     "format": "prettier --write .",
     "lint": "eslint .",
+    "test:course-links": "node --test scripts/test-course-links.mjs",
     "textlint": "textlint ./docs",
     "preview": "rspress preview",
     "package:log-analysis": "node scripts/package-log-analysis.mjs",
