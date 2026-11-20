@@ -15,11 +15,15 @@ const text = checkCourseDocs('monitoring-intro', [
 for (const name of ['index.md', '_nav.json']) {
   assert.ok(readFileSync(path.join(docs, name), 'utf8').includes('/monitoring-intro/'), `Missing course entry: ${name}`);
 }
-for (let chapter = 1; chapter <= 7; chapter++) {
-  const name = expectedOrder.find(name => name.startsWith(`0${chapter}-`));
+// Preparation and review have their own structure; every practical lesson is checked.
+// Disk and network lessons observe bounded commands instead of injecting faults.
+const observationLessons = new Set(['09-disk', '11-network']);
+for (const name of expectedOrder.filter(name => !['00-prepare', '08-review'].includes(name))) {
   const section = text.split(`<a id="guide-${name}"></a>`)[1].split('<a id="')[0];
-  for (const label of ['困りごと', '小さな追加', '安全な故障', '復旧', '確かめた範囲', 'チェックポイント']) {
-    assert.ok(section.includes(label), `${name}: missing teaching stage ${label}`);
+  const safetyStage = observationLessons.has(name) ? '安全な観察' : '安全な故障';
+  for (const label of ['困りごと', '小さな追加', safetyStage, '復旧', '確かめた範囲', 'チェックポイント']) {
+    assert.match(section, new RegExp(`^### ${label}(?:[\\s:：]|$)`, 'm'),
+      `${name}: missing teaching stage ${label}`);
   }
 }
 const mainText = text.replace(/<a id="appendix-custom-checker"><\/a>[\s\S]*?(?=<a id=")/, '');
