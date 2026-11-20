@@ -5,7 +5,7 @@
     "LESSCHARSET": "utf-8",
     "SHELL": "bash",
     "TERM": "xterm-256color",
-    "HISTCONTROL": "erasedups",
+    "HISTCONTROL": "erasedups"
   },
   "postCreateCommand": "npm install -g @openai/codex",
   "appPort": ["3000:3000"],
@@ -19,6 +19,6 @@
       "type": "bind",
       "source": "${localEnv:HOME}/.gitconfig",
       "target": "/home/node/.gitconfig"
-    },
-  ],
+    }
+  ]
 }

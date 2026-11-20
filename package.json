@@ -7,7 +7,7 @@
     "check": "biome check",
     "check:fix": "biome check --write",
     "dev": "rspress dev",
-    "format": "prettier --write .",
+    "format": "prettier --write \"**/*.{md,mdx}\"",
     "lint": "eslint .",
     "test:course-links": "node --test scripts/test-course-links.mjs",
     "textlint": "textlint ./docs",

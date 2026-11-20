@@ -2,7 +2,9 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
 const output = path.resolve('doc_build');
-const routes = JSON.parse(readFileSync(new URL('./legacy-routes.json', import.meta.url), 'utf8'));
+const routes = JSON.parse(
+  readFileSync(new URL('./legacy-routes.json', import.meta.url), 'utf8'),
+);
 
 for (const [route, target] of Object.entries(routes)) {
   for (const name of [`${route}.html`, `${route}/index.html`]) {
@@ -32,4 +34,6 @@ location.replace(target.href);
     writeFileSync(file, html);
   }
 }
-console.log(`PASS: generated redirects for ${Object.keys(routes).length} legacy chapter URLs`);
+console.log(
+  `PASS: generated redirects for ${Object.keys(routes).length} legacy chapter URLs`,
+);
