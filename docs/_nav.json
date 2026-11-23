@@ -30,7 +30,7 @@
     "activeMatch": "^/security-log-monitoring/"
   },
   {
-    "text": "アクセス解析",
+    "text": "プライバシー",
     "link": "/privacy",
     "activeMatch": "^/privacy(?:\\.html)?$"
   },
