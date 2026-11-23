@@ -13,6 +13,8 @@
 
 ## 配布資料と進め方
 
+通常はブラウザー分析ツールを開き、内蔵サンプルで進めます。サンプルログを個別にダウンロードする必要はありません。ZIPはオフライン利用向け、個別のログファイルは手元で内容を確認したり、ツールのファイル選択で読み込んだりするために配布しています。
+
 - <a href="./analyzer.html" target="_blank" rel="noopener">ブラウザー分析ツールを開く</a>
 - <a href="./access-log-analysis.zip" download>教材・分析ツール・サンプルログ一式（ZIP）</a>
 - <a href="./samples/01-baseline.jsonl" download>01 正常時のログ</a>

@@ -41,12 +41,12 @@ features:
     details: 【目的】Windows 上で PostgreSQL を起動し、SQL とデータの永続化を体験します。【前提】PowerShell でコマンドを実行できること。WSL 2.9.3 以降と wslc を事前に用意します。Docker Desktop は不要です。60〜90分の教材です。
     link: /wslc-postgresql/
   - title: インフラ監視実践入門
-    details: 【目的】Uptime Kuma の動作確認から、通知・遅さ・ログ・容量・CPU/メモリー・通信へ観測を広げます。【前提】PowerShell と Docker Desktop、または WSL 2 上の Docker Engine。Python の実装知識は不要です。
+    details: 【目的】Uptime Kuma の動作確認から、通知・遅さ・ログ・容量・CPU/メモリー・通信へ観測を広げます。【前提】PowerShell と Docker Desktop、または WSL 2 上の Docker Engine。Python の実装知識は不要です。準備を除いて3〜4時間の教材です。
     link: /monitoring-intro/
   - title: アクセスログ監視入門
-    details: 【目的】Loki・Grafana・Alloy でログの収集・検索・可視化を行い、アラートと復旧通知を体験します。【前提】Docker Compose を実行した経験。PowerShell と Docker Desktop、または WSL 2 上の Docker Engine を使います。
+    details: 【目的】Loki・Grafana・Alloy でログの収集・検索・可視化を行い、アラートと復旧通知を体験します。【前提】Docker Compose を実行した経験。PowerShell と Docker Desktop、または WSL 2 上の Docker Engine を使います。90〜120分の教材です。
     link: /access-log-monitoring/
   - title: 不正アクセス監視入門
-    details: 【目的】認証失敗や404の集中を検知し、誤検知の確認と調査につなげます。【前提】アクセスログ監視入門の続編です。先に Explore・LogQL・ダッシュボード・アラートの基本操作を学んでください。ラボは独立して起動します。
+    details: 【目的】認証失敗や404の集中を検知し、誤検知の確認と調査につなげます。【前提】アクセスログ監視入門の続編です。先に Explore・LogQL・ダッシュボード・アラートの基本操作を学んでください。ラボは独立して起動します。90〜120分の教材です。
     link: /security-log-monitoring/
 ---
